@@ -88,3 +88,17 @@ Semua skenario di bawah sudah diuji manual di browser dan/atau lewat tes otomati
 | 23 | Dua admin menyetujui dua klaim berbeda untuk barang yang sama | Persetujuan kedua ditolak (409) | ✅ tes otomatis |
 | 24 | Penemu menekan "Bukan ini" pada kandidat | Tombol tidak ada; permintaan langsung ditolak (403) | ✅ tes otomatis |
 | 25 | Membuka /reports?q[]=x | Kembali dengan pesan validasi, bukan error 500 | ✅ tes otomatis |
+
+## 6. Hasil Pengukuran Indikator
+
+Pengukuran dilakukan pada 16 November 2026 dengan Chrome headless di laptop pengembang, memakai server `php artisan serve`, data 201 laporan aktif, dan OPcache aktif.
+
+| Indikator (PRD §2) | Target | Hasil | Status |
+|---|---|---|---|
+| Waktu muat Peta Global sampai marker pertama tampil | < 2 detik | Median 0,77 detik dari 5 percobaan (JSON peta 94 KB, 0,1 sampai 0,3 detik) | Tercapai |
+| Laporan baru tampil di Peta Global | < 3 detik | Tersimpan 0,43 detik, ada di JSON peta 0,64 detik, terlihat di peta 1,27 detik | Tercapai |
+| Skenario uji end-to-end | 100% lulus | 25 dari 25 skenario sesuai | Tercapai |
+| Waktu membuat satu laporan | < 3 menit | Belum diukur, perlu uji dengan 3 pengguna nyata (jadwal minggu 3) | Belum |
+| Akurasi auto-match pada 10 pasangan uji | ≥ 8 pasangan di 3 teratas | 4 pasangan demo yang mirip semuanya berada di peringkat pertama; uji formal 10 pasangan belum dilakukan | Sebagian |
+
+Tanpa OPcache (bawaan Laragon), Peta Global yang sama butuh median 2,2 detik karena PHP mengompilasi ulang semua file di setiap request. OPcache sudah diaktifkan di `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.ini` (salinan asli: `php.ini.bak-sebelum-opcache`). Anggota kelompok lain sebaiknya mengaktifkannya juga sebelum demo.

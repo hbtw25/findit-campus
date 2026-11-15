@@ -41,6 +41,8 @@ Jalankan `php artisan serve --host=0.0.0.0`. Buka `http://IP-LAPTOP:8000` dari H
 
 ### Sebelum presentasi
 
+Aktifkan OPcache di `php.ini` Laragon (menu Laragon, PHP, php.ini): hapus titik koma di depan `zend_extension=opcache` dan `opcache.enable=1`, lalu ubah `opcache.enable_cli=0` menjadi `opcache.enable_cli=1`. Tanpa OPcache, Peta Global dengan 200 laporan butuh sekitar 2,2 detik; dengan OPcache sekitar 0,8 detik.
+
 Ubah `APP_DEBUG=true` menjadi `APP_DEBUG=false` di `.env`, supaya bila terjadi error yang tampil adalah halaman ramah, bukan stack trace. Jalankan `php artisan migrate:fresh --seed` untuk mengembalikan data demo ke kondisi awal.
 
 ### Mengaktifkan penilaian AI (opsional)
