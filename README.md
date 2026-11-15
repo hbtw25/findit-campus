@@ -60,7 +60,7 @@ Tanpa API key, aplikasi tetap berjalan normal memakai skor aturan.
 ```bash
 php artisan test
 ```
-41 tes fitur memakai SQLite di memori, jadi tidak menyentuh database MySQL.
+42 tes fitur memakai SQLite di memori, jadi tidak menyentuh database MySQL.
 
 ## Teknologi
 

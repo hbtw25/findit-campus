@@ -1,6 +1,6 @@
 # Roadmap Implementasi FindIt Campus
 
-Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1 sampai F12 terimplementasi, 41 tes otomatis lulus, dan data demo siap untuk presentasi.
+Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1 sampai F12 terimplementasi, 42 tes otomatis lulus, dan data demo siap untuk presentasi.
 
 Roadmap ini dipakai kelompok untuk:
 1. memahami kode bagian masing-masing (sesuai PIC);
@@ -43,7 +43,7 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 | F5 | Klaim Kepemilikan | ✅ | Ciri rahasia, maksimal 3 klaim menunggu, tidak bisa klaim laporan sendiri |
 | F6 | Komunikasi & Pengembalian | ✅ | Chat AJAX (polling 5 detik), konfirmasi diserahkan |
 | F7 | Admin | ✅ | Dashboard, DataTables JSON, verifikasi klaim berdampingan, CRUD kategori |
-| F8 | Integrasi & Pengujian | ✅ | 41 tes fitur lulus, seeder demo |
+| F8 | Integrasi & Pengujian | ✅ | 42 tes fitur lulus, seeder demo |
 | F9 | Peta Foto ala Instagram | ✅ | Marker foto + cluster foto terbaru + jumlah |
 | F10 | Bagikan Link/QR/Poster | ✅ | `/r/{kode}`, QR, poster A5 (print), unduh story 1080×1920 |
 | F11 | AI Auto-Match | ✅ | Skor aturan selalu jalan; Claude menilai ulang bila API key diisi |
