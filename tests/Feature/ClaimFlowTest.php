@@ -96,6 +96,56 @@ class ClaimFlowTest extends TestCase
         $this->actingAs(User::factory()->create())->getJson("/ajax/claims/{$claim->id}/messages")->assertForbidden();
     }
 
+    public function test_tidak_ada_klaim_baru_saat_barang_sedang_diserahkan(): void
+    {
+        Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => $this->owner->id, 'status' => 'approved']));
+        $this->found->update(['status' => 'in_claim']);
+
+        $this->actingAs(User::factory()->create())->post("/reports/{$this->found->id}/claims", $this->claimPayload());
+
+        $this->assertSame(1, Claim::where('report_id', $this->found->id)->count());
+    }
+
+    public function test_klaim_yang_ditolak_tidak_bisa_diajukan_ulang(): void
+    {
+        Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => $this->owner->id, 'status' => 'rejected']));
+
+        $this->actingAs($this->owner)->post("/reports/{$this->found->id}/claims", $this->claimPayload());
+
+        $this->assertSame(0, Claim::where('report_id', $this->found->id)->where('status', 'pending')->count());
+    }
+
+    public function test_pelapor_tidak_bisa_menutup_laporan_saat_serah_terima(): void
+    {
+        $claim = Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => $this->owner->id, 'status' => 'approved']));
+        $this->found->update(['status' => 'in_claim']);
+
+        $this->actingAs($this->finder)->post("/reports/{$this->found->id}/close")->assertSessionHas('error');
+
+        $this->assertSame('in_claim', $this->found->fresh()->status);
+        $this->assertSame('approved', $claim->fresh()->status);
+    }
+
+    public function test_admin_menutup_laporan_membatalkan_semua_klaim_berjalan(): void
+    {
+        $approved = Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => $this->owner->id, 'status' => 'approved']));
+        $pending = Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => User::factory()->create()->id]));
+
+        $this->actingAs($this->admin)->post("/admin/reports/{$this->found->id}/close")->assertRedirect();
+
+        $this->assertSame('closed', $this->found->fresh()->status);
+        $this->assertSame('cancelled', $approved->fresh()->status);
+        $this->assertSame('cancelled', $pending->fresh()->status);
+    }
+
+    public function test_chat_hanya_bisa_dibaca_setelah_barang_diserahkan(): void
+    {
+        $claim = Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => $this->owner->id, 'status' => 'returned']));
+
+        $this->actingAs($this->owner)->getJson("/ajax/claims/{$claim->id}/messages")->assertOk();
+        $this->actingAs($this->owner)->postJson("/ajax/claims/{$claim->id}/messages", ['body' => 'Halo'])->assertForbidden();
+    }
+
     public function test_serah_terima_menyelesaikan_laporan_temuan_dan_hilang(): void
     {
         $lost = Report::factory()->create(['user_id' => $this->owner->id, 'category_id' => $this->found->category_id]);

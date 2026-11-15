@@ -70,6 +70,17 @@ class AuthTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_akun_yang_dinonaktifkan_langsung_keluar(): void
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->get('/my/reports')->assertOk();
+
+        $user->update(['is_active' => false]);
+
+        $this->get('/my/reports')->assertRedirect(route('login'));
+        $this->assertGuest();
+    }
+
     public function test_halaman_admin_khusus_admin(): void
     {
         $this->actingAs(User::factory()->create())->get('/admin')->assertForbidden();

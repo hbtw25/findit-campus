@@ -85,6 +85,17 @@ class ClaimFlow
         Alert::send($claim->report->user_id, 'claim_update', 'Serah terima tercatat selesai', 'Terima kasih sudah membantu mengembalikan barang.', route('claims.show', $claim));
     }
 
+    // Laporan ditutup: klaim yang masih berjalan dibatalkan dan pengklaimnya diberi tahu
+    public function cancelForClosedReport(Report $report, string $note): void
+    {
+        $claims = $report->claims()->whereIn('status', ['pending', 'approved'])->get();
+
+        foreach ($claims as $claim) {
+            $claim->update(['status' => 'cancelled', 'admin_note' => $note]);
+            Alert::send($claim->user_id, 'claim_update', 'Klaim kamu dibatalkan', $note.' ('.$report->title.')', route('claims.show', $claim));
+        }
+    }
+
     // Laporan kembali Aktif bila tidak ada lagi klaim yang menunggu atau disetujui
     public function syncReportStatus(Report $report): void
     {

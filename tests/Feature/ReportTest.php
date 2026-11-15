@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Report;
 use App\Models\ReportMatch;
 use App\Models\User;
+use App\Services\MatchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -131,6 +132,36 @@ class ReportTest extends TestCase
         $this->assertNotNull($alert);
         // URL disimpan relatif agar tetap benar di host mana pun (localhost / 127.0.0.1 / IP LAN)
         $this->assertSame("/reports/{$lost->id}#kandidat", $alert->url);
+    }
+
+    public function test_mengubah_jenis_laporan_menghapus_kandidat_lama(): void
+    {
+        $owner = User::factory()->create();
+        $lost = Report::factory()->create(['user_id' => $owner->id, 'category_id' => $this->category->id]);
+        Report::factory()->found()->create(['category_id' => $this->category->id, 'lat' => -6.97290, 'lng' => 107.62951]);
+        app(MatchService::class)->refreshFor($lost);
+        $this->assertSame(1, ReportMatch::where('lost_report_id', $lost->id)->count());
+
+        // Pemilik ternyata salah pilih jenis: laporan diubah menjadi barang temuan
+        $this->actingAs($owner)->put("/reports/{$lost->id}", $this->payload([
+            'type' => 'found',
+            'photo' => UploadedFile::fake()->image('kunci.jpg'),
+            'secret_detail' => 'Ada kunci loker nomor 17',
+        ]))->assertRedirect();
+
+        $this->assertSame(0, ReportMatch::where('lost_report_id', $lost->id)->count());
+    }
+
+    public function test_admin_menampilkan_lagi_laporan_menghitung_ulang_kandidat(): void
+    {
+        $lost = Report::factory()->create(['category_id' => $this->category->id]);
+        $found = Report::factory()->found()->create(['category_id' => $this->category->id, 'is_hidden' => true]);
+        $admin = User::factory()->admin()->create();
+
+        $this->actingAs($admin)->post("/admin/reports/{$found->id}/toggle-hidden")->assertRedirect();
+
+        $this->assertFalse($found->fresh()->is_hidden);
+        $this->assertTrue(ReportMatch::where('lost_report_id', $lost->id)->where('found_report_id', $found->id)->exists());
     }
 
     public function test_orang_lain_tidak_bisa_mengubah_laporan(): void

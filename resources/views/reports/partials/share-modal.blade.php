@@ -14,7 +14,7 @@
                 </div>
                 <div class="d-grid gap-2">
                     <a href="{{ route('reports.poster', $report) }}" target="_blank" class="btn btn-outline-ink"><i class="bi bi-printer me-1"></i>Poster siap cetak & gambar story</a>
-                    <a href="https://wa.me/?text={{ urlencode(($report->isLost() ? 'Dicari: ' : 'Ditemukan: ') . $report->title . ' — ' . $report->share_url) }}" target="_blank" rel="noopener" class="btn btn-outline-ink"><i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp</a>
+                    <a href="https://wa.me/?text={{ urlencode(($report->isLost() ? 'Dicari: ' : 'Ditemukan: ') . $report->title . '. Detail: ' . $report->share_url) }}" target="_blank" rel="noopener" class="btn btn-outline-ink"><i class="bi bi-whatsapp me-1"></i>Kirim ke WhatsApp</a>
                 </div>
             </div>
         </div>

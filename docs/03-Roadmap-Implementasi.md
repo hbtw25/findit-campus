@@ -1,6 +1,6 @@
-# Roadmap Implementasi — FindIt Campus
+# Roadmap Implementasi FindIt Campus
 
-Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1–F12 terimplementasi, 26 tes otomatis lulus, dan data demo siap untuk presentasi.
+Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1 sampai F12 terimplementasi, 34 tes otomatis lulus, dan data demo siap untuk presentasi.
 
 Roadmap ini dipakai kelompok untuk:
 1. memahami kode bagian masing-masing (sesuai PIC);
@@ -25,12 +25,12 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 
 | Minggu | Modul praktikum | Fokus kelompok | Luaran |
 |---|---|---|---|
-| 0 (15–16 Nov) | Modul 10 AJAX | ✅ PRD, desain FigCraft, website v1, tes, laporan | Semua dokumen + aplikasi berjalan |
-| 1 (17–23 Nov) | Modul 11 Laravel Intro | Push ke GitHub (Modul 2), setiap anggota clone + jalankan lokal + membaca file PIC-nya; uji ulang koordinat 34 gedung di lapangan | Repo kelompok, semua laptop bisa menjalankan aplikasi |
-| 2 (24–30 Nov) | Modul 12 Laravel DB 1 | Pengayaan pilihan (§4); foto demo diganti foto asli barang (opsional) | 1–2 fitur pengayaan |
-| 3 (1–7 Des) | Modul 13 Laravel DB 2 | Uji pengguna dengan 3 teman (target < 3 menit per laporan); perbaiki temuan; aktifkan AI bila ada API key | Catatan uji pengguna |
-| 4 (8–14 Des) | Modul 14 Responsi Tubes 2 | Asistensi dengan asprak (target progres 80–100% sudah tercapai), latihan demo | Demo lancar + slide |
-| 5 (15–21 Des) | Modul 15 COTS | Persiapan coding on the spot: setiap anggota latihan membuat CRUD kecil dengan pola yang sama | — |
+| 0 (15 sampai 16 Nov) | Modul 10 AJAX | ✅ PRD, desain FigCraft, website v1, tes, laporan | Semua dokumen + aplikasi berjalan |
+| 1 (17 sampai 23 Nov) | Modul 11 Laravel Intro | Push ke GitHub (Modul 2), setiap anggota clone + jalankan lokal + membaca file PIC-nya; uji ulang koordinat 34 gedung di lapangan | Repo kelompok, semua laptop bisa menjalankan aplikasi |
+| 2 (24 sampai 30 Nov) | Modul 12 Laravel DB 1 | Pengayaan pilihan (§4); foto demo diganti foto asli barang (opsional) | 1 sampai 2 fitur pengayaan |
+| 3 (1 sampai 7 Des) | Modul 13 Laravel DB 2 | Uji pengguna dengan 3 teman (target < 3 menit per laporan); perbaiki temuan; aktifkan AI bila ada API key | Catatan uji pengguna |
+| 4 (8 sampai 14 Des) | Modul 14 Responsi Tubes 2 | Asistensi dengan asprak (target progres 80 sampai 100% sudah tercapai), latihan demo | Demo lancar + slide |
+| 5 (15 sampai 21 Des) | Modul 15 COTS | Persiapan coding on the spot: setiap anggota latihan membuat CRUD kecil dengan pola yang sama | - |
 
 ## 3. Status Fitur
 
@@ -38,12 +38,12 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 |---|---|---|---|
 | F1 | Registrasi & Login | ✅ | Validasi email kampus, throttle 5×/menit, akun nonaktif ditolak |
 | F2 | Pelaporan Hilang & Ditemukan | ✅ | CRUD + foto (GD: 1280 px + thumbnail 320 px) + tutup/selesai |
-| F3 | Pemetaan & Lokasi | ✅ | Pilih gedung → pin bisa digeser, validasi radius kampus 1,5 km |
+| F3 | Pemetaan & Lokasi | ✅ | Pilih gedung lalu geser pin, validasi radius kampus 1,5 km |
 | F4 | Pencarian & Filter | ✅ | Kata kunci, jenis, kategori, gedung, periode; dipakai juga di peta |
 | F5 | Klaim Kepemilikan | ✅ | Ciri rahasia, maksimal 3 klaim menunggu, tidak bisa klaim laporan sendiri |
 | F6 | Komunikasi & Pengembalian | ✅ | Chat AJAX (polling 5 detik), konfirmasi diserahkan |
 | F7 | Admin | ✅ | Dashboard, DataTables JSON, verifikasi klaim berdampingan, CRUD kategori |
-| F8 | Integrasi & Pengujian | ✅ | 26 tes fitur lulus, seeder demo |
+| F8 | Integrasi & Pengujian | ✅ | 34 tes fitur lulus, seeder demo |
 | F9 | Peta Foto ala Instagram | ✅ | Marker foto + cluster foto terbaru + jumlah |
 | F10 | Bagikan Link/QR/Poster | ✅ | `/r/{kode}`, QR, poster A5 (print), unduh story 1080×1920 |
 | F11 | AI Auto-Match | ✅ | Skor aturan selalu jalan; Claude menilai ulang bila API key diisi |
@@ -51,11 +51,11 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 
 ## 4. Ide Pengayaan (bila ada waktu)
 
-1. **Riwayat pencarian tersimpan:** pencari menyimpan filter, lalu diberi notifikasi saat ada laporan baru yang cocok.
-2. **Statistik admin:** grafik laporan per minggu (Chart.js) dan peta panas lokasi yang sering kehilangan barang.
-3. **Kedaluwarsa otomatis:** laporan > 60 hari tanpa aktivitas otomatis ditutup (Laravel scheduler).
-4. **Ekspor CSV** rekap barang kembali per bulan untuk Kemahasiswaan.
-5. **Multi foto** per laporan (tabel `report_photos`).
+1. Pencari bisa menyimpan filter pencarian, lalu mendapat notifikasi saat ada laporan baru yang cocok.
+2. Admin mendapat grafik laporan per minggu (Chart.js) dan peta panas lokasi yang sering kehilangan barang.
+3. Laporan yang lebih dari 60 hari tanpa aktivitas ditutup otomatis oleh Laravel scheduler.
+4. Admin bisa mengekspor rekap barang kembali per bulan ke CSV untuk Kemahasiswaan.
+5. Satu laporan bisa memuat beberapa foto (tabel `report_photos`).
 
 ## 5. Skenario Uji End-to-End
 
@@ -78,3 +78,8 @@ Semua skenario di bawah sudah diuji manual di browser dan/atau lewat tes otomati
 | 13 | Penemu konfirmasi diserahkan | Laporan temuan dan laporan hilang menjadi Selesai | ✅ tes otomatis |
 | 14 | Pengguna biasa membuka /admin | 403 "Halaman ini khusus admin." | ✅ tes otomatis |
 | 15 | Buka poster lalu "Unduh gambar story" | PNG 1080×1920 terunduh | ✅ browser |
+| 16 | Pengguna lain mengklaim barang yang klaimnya sudah disetujui | Ditolak: "sedang dalam proses serah terima" | ✅ tes otomatis |
+| 17 | Mengklaim ulang setelah klaim ditolak | Ditolak, pengguna diminta menghubungi admin | ✅ tes otomatis |
+| 18 | Pelapor menutup laporan saat klaim sudah disetujui | Ditolak; admin yang menutup akan membatalkan semua klaim berjalan | ✅ tes otomatis |
+| 19 | Admin menonaktifkan akun yang sedang login | Pengguna langsung keluar pada klik berikutnya | ✅ tes otomatis |
+| 20 | Mengirim chat setelah barang diserahkan | Ditolak (403), riwayat chat tetap bisa dibaca | ✅ tes otomatis |

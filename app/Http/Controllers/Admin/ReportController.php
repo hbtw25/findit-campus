@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\ScoreMatchesWithAi;
 use App\Models\Report;
+use App\Services\AiMatcher;
+use App\Services\ClaimFlow;
 use App\Services\MatchService;
 
 class ReportController extends Controller
@@ -25,7 +28,7 @@ class ReportController extends Controller
                 'title' => $r->title,
                 'type' => $r->type,
                 'type_label' => $r->type_label,
-                'category' => $r->category->name,
+                'category' => $r->category?->name ?? '-',
                 'place' => $r->campusLocation?->short_name ?? '-',
                 'reporter' => $r->user->name,
                 'status' => $r->status,
@@ -45,6 +48,12 @@ class ReportController extends Controller
 
         if ($report->is_hidden) {
             $matcher->removeSuggestions($report);
+        } else {
+            // Ditampilkan lagi: cari ulang kandidat yang cocok
+            $lostIds = $matcher->refreshFor($report);
+            if (AiMatcher::enabled()) {
+                $lostIds->each(fn ($id) => ScoreMatchesWithAi::dispatch($id));
+            }
         }
 
         return back()->with('success', $report->is_hidden
@@ -52,13 +61,12 @@ class ReportController extends Controller
             : 'Laporan ditampilkan kembali.');
     }
 
-    public function close(Report $report, MatchService $matcher)
+    public function close(Report $report, MatchService $matcher, ClaimFlow $flow)
     {
+        abort_unless($report->isOpen(), 403, 'Laporan ini sudah tidak aktif.');
+
         $report->update(['status' => 'closed']);
-        $report->claims()->where('status', 'pending')->update([
-            'status' => 'cancelled',
-            'admin_note' => 'Laporan ditutup admin.',
-        ]);
+        $flow->cancelForClosedReport($report, 'Laporan ditutup admin.');
         $matcher->removeSuggestions($report);
 
         return back()->with('success', 'Laporan ditutup.');

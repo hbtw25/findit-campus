@@ -66,6 +66,10 @@
                 @elseif ($report->isFound() && $report->isOpen())
                     @if ($myClaim && $myClaim->isActive())
                         <a href="{{ route('claims.show', $myClaim) }}" class="btn btn-ink">Lihat klaim saya ({{ $myClaim->status_label }})</a>
+                    @elseif ($hasApprovedClaim)
+                        <div class="secret-note"><i class="bi bi-hourglass-split"></i><span>Barang ini sedang dalam proses serah terima dengan pengklaim yang sudah diverifikasi admin.</span></div>
+                    @elseif ($myClaim && $myClaim->status === 'rejected')
+                        <div class="secret-note"><i class="bi bi-x-circle"></i><span>Klaim kamu untuk barang ini sudah ditolak. Hubungi admin bila ada kekeliruan.</span></div>
                     @else
                         <a href="{{ route('claims.create', $report) }}" class="btn btn-brand py-2"><i class="bi bi-patch-check me-1"></i>Ajukan Klaim</a>
                     @endif

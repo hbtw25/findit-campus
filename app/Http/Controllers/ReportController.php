@@ -8,10 +8,12 @@ use App\Models\Category;
 use App\Models\Claim;
 use App\Models\Report;
 use App\Services\AiMatcher;
+use App\Services\ClaimFlow;
 use App\Services\MatchService;
 use App\Services\PhotoService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use RuntimeException;
 
 class ReportController extends Controller
 {
@@ -63,9 +65,8 @@ class ReportController extends Controller
         $validated['user_id'] = Auth::id();
 
         if ($request->hasFile('photo')) {
-            $validated = array_merge($validated, $this->photos->store($request->file('photo')));
+            $validated = array_merge($validated, $this->storePhoto($request));
         }
-        unset($validated['photo_file']);
 
         $report = Report::create($validated);
         $this->runMatching($report);
@@ -102,7 +103,10 @@ class ReportController extends Controller
             ? $report->claims()->with('user')->latest()->get()
             : collect();
 
-        return view('reports.show', compact('report', 'isOwner', 'matches', 'myClaim', 'incomingClaims'));
+        // Tombol klaim disembunyikan bila barang sedang diserahkan ke pengklaim lain
+        $hasApprovedClaim = $report->claims()->where('status', 'approved')->exists();
+
+        return view('reports.show', compact('report', 'isOwner', 'matches', 'myClaim', 'incomingClaims', 'hasApprovedClaim'));
     }
 
     public function edit(Report $report)
@@ -120,14 +124,25 @@ class ReportController extends Controller
 
         $validated = $this->validateReport($request, $report);
 
+        $oldPhoto = [$report->photo, $report->photo_thumb];
         if ($request->hasFile('photo')) {
-            $this->photos->delete($report->photo, $report->photo_thumb);
-            $validated = array_merge($validated, $this->photos->store($request->file('photo')));
+            // Foto baru disimpan dulu; foto lama baru dihapus setelah penyimpanan berhasil
+            $validated = array_merge($validated, $this->storePhoto($request));
         }
 
         $report->fill($validated);
         $keyChanged = $report->isDirty(['title', 'description', 'category_id', 'lat', 'lng', 'event_at', 'color', 'brand', 'photo']);
+        $typeChanged = $report->isDirty('type');
         $report->save();
+
+        if ($request->hasFile('photo')) {
+            $this->photos->delete(...$oldPhoto);
+        }
+
+        // Jenis berubah (hilang <-> temuan): kandidat lama dari sisi sebelumnya tidak berlaku lagi
+        if ($typeChanged) {
+            $this->matcher->removeSuggestions($report);
+        }
 
         $this->runMatching($report, $keyChanged);
 
@@ -152,12 +167,15 @@ class ReportController extends Controller
     public function close(Report $report)
     {
         abort_unless(Auth::id() === $report->user_id || Auth::user()->isAdmin(), 403);
+        abort_unless($report->isOpen(), 403, 'Laporan ini sudah tidak aktif.');
+
+        // Saat serah terima sedang berjalan, pelapor harus mengonfirmasi serah terima atau meminta bantuan admin
+        if (! Auth::user()->isAdmin() && $report->claims()->where('status', 'approved')->exists()) {
+            return back()->with('error', 'Ada klaim yang sudah disetujui. Konfirmasi serah terima di halaman klaim, atau hubungi admin.');
+        }
 
         $report->update(['status' => 'closed']);
-        $report->claims()->where('status', 'pending')->update([
-            'status' => 'cancelled',
-            'admin_note' => 'Laporan ditutup oleh pelapor.',
-        ]);
+        app(ClaimFlow::class)->cancelForClosedReport($report, 'Laporan ditutup oleh pelapor.');
         $this->matcher->removeSuggestions($report);
 
         return back()->with('success', 'Laporan sudah ditutup dan tidak tampil lagi di peta.');
@@ -234,6 +252,16 @@ class ReportController extends Controller
         unset($validated['photo']);
 
         return $validated;
+    }
+
+    // Foto yang lolos validasi tapi rusak saat diproses GD dikembalikan sebagai pesan validasi, bukan error 500
+    private function storePhoto(Request $request): array
+    {
+        try {
+            return $this->photos->store($request->file('photo'));
+        } catch (RuntimeException $e) {
+            back()->withInput()->withErrors(['photo' => 'Foto tidak bisa dibaca. Coba foto lain dalam format JPG atau PNG.'])->throwResponse();
+        }
     }
 
     // Auto-match tahap 1 langsung; tahap 2 (AI) lewat antrian bila API key tersedia

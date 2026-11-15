@@ -34,6 +34,9 @@ class MessageController extends Controller
     {
         $this->authorizeChat($claim);
 
+        // Setelah barang diserahkan, chat hanya bisa dibaca
+        abort_unless($claim->status === 'approved', 403, 'Chat sudah ditutup karena serah terima selesai.');
+
         $validated = $request->validate([
             'body' => 'required|string|min:1|max:1000',
         ]);

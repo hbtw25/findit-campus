@@ -1,4 +1,4 @@
-# Panduan untuk AI coding agent — FindIt Campus
+# Panduan untuk AI coding agent: FindIt Campus
 
 Proyek Tugas Besar Pemrograman Web (Telkom University). Kode harus tetap sesuai materi kuliah supaya bisa dijelaskan anggota kelompok.
 
@@ -13,3 +13,4 @@ Proyek Tugas Besar Pemrograman Web (Telkom University). Kode harus tetap sesuai 
 - `secret_detail` tidak boleh tampil publik, masuk JSON, atau dikirim ke AI.
 - Jalankan `php artisan test` setelah perubahan; tes memakai SQLite memori.
 - Dokumen produk: `C:\Users\hbtw2\OneDrive\Documents\PROWEB\tubes-findit\docs`.
+- Teks antarmuka, dokumen, dan komentar ditulis tanpa em dash atau en dash, tanpa emoji, dan tanpa frasa AI generik (lihat aturan antislop di `PROWEB/.agents`).

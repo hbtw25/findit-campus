@@ -1,6 +1,6 @@
-# Tech Stack dan Gaya Kode — FindIt Campus
+# Tech Stack dan Gaya Kode FindIt Campus
 
-Dokumen ini menjelaskan teknologi yang dipakai, alasannya, dan aturan penulisan kode. Semua pilihan sengaja mengikuti materi **Pemrograman Web** (slide minggu 1–13 dan Modul Praktikum 2–13), supaya setiap anggota kelompok bisa membaca dan melanjutkan kodenya.
+Dokumen ini menjelaskan teknologi yang dipakai, alasannya, dan aturan penulisan kode. Semua pilihan sengaja mengikuti materi Pemrograman Web (slide minggu 1 sampai 13 dan Modul Praktikum 2 sampai 13), supaya setiap anggota kelompok bisa membaca dan melanjutkan kodenya.
 
 Kode sumber: `C:\laragon\www\findit-campus` (folder standar proyek Laragon).
 
@@ -8,21 +8,21 @@ Kode sumber: `C:\laragon\www\findit-campus` (folder standar proyek Laragon).
 
 | Lapisan | Teknologi | Versi | Materi terkait | Dipakai untuk |
 |---|---|---|---|---|
-| Backend | Laravel (PHP framework, MVC) | 13.x di PHP 8.3 | Slide 10–13, Modul 11–13 | Routing, controller, Eloquent, Blade, Auth, validasi |
+| Backend | Laravel (PHP framework, MVC) | 13.x di PHP 8.3 | Slide 10 sampai 13, Modul 11 sampai 13 | Routing, controller, Eloquent, Blade, Auth, validasi |
 | Database | MySQL | 8.4 (Laragon) | Slide 1 (DBMS), Modul 12 | 8 tabel aplikasi + tabel bawaan Laravel |
-| Template | Blade | bawaan Laravel | Modul 11–12 (`@extends`, `@yield`, `@csrf`, `@error`) | Semua halaman |
+| Template | Blade | bawaan Laravel | Modul 11 sampai 12 (`@extends`, `@yield`, `@csrf`, `@error`) | Semua halaman |
 | CSS framework | Bootstrap | 5.3.3 | Slide 4, Modul 5 | Grid, form, tombol, modal, dropdown |
-| CSS kustom | `public/css/app.css` | — | Slide 3, Modul 4 (selector, box model, flexbox/grid, `@media`, `@font-face`) | Design token, marker foto, layout peta |
+| CSS kustom | `public/css/app.css` | - | Slide 3, Modul 4 (selector, box model, flexbox/grid, `@media`, `@font-face`) | Design token, marker foto, layout peta |
 | JavaScript | jQuery | 3.7.1 | Slide 5, Modul 6 | DOM, event, `$.ajax` |
-| AJAX + JSON | jQuery `$.ajax` + `response()->json()` | — | Slide 9, Modul 10 | Peta, notifikasi, chat, tabel admin |
+| AJAX + JSON | jQuery `$.ajax` + `response()->json()` | - | Slide 9, Modul 10 | Peta, notifikasi, chat, tabel admin |
 | Plugin jQuery | DataTables | 2.1.8 | Rubrik COTS ("JQuery Plugin", "JSON untuk datatable") | Tabel admin |
-| Peta (GIS) | Leaflet + Leaflet.markercluster + tile OpenStreetMap | 1.9.4 / 1.5.3 | — (sama seperti whereis.telkomuniversity.ac.id) | Peta Global, pemilih lokasi, peta mini |
-| QR & story | qrcode.js, html2canvas | 1.0.0 / 1.4.1 | — | Fitur bagikan |
-| AI (opsional) | Claude API via SDK resmi `anthropic-ai/sdk` | 1.8 | — | Penilaian ulang auto-match (teks + foto) |
-| Ikon & font | Bootstrap Icons, Plus Jakarta Sans | 1.11.3 / variable | — | Antarmuka |
-| Server lokal | Laragon (Apache/MySQL) atau `php artisan serve` | — | Slide 1 (XAMPP/Laragon), Modul 9 | Menjalankan aplikasi |
-| Versi kode | Git + GitHub | — | Modul 2 | Kerja kelompok |
-| Pengujian | PHPUnit (tes fitur Laravel) | 12 | — | 26 tes otomatis |
+| Peta (GIS) | Leaflet + Leaflet.markercluster + tile OpenStreetMap | 1.9.4 / 1.5.3 | Tidak ada di materi; sama dengan peta whereis.telkomuniversity.ac.id | Peta Global, pemilih lokasi, peta mini |
+| QR & story | qrcode.js, html2canvas | 1.0.0 / 1.4.1 | - | Fitur bagikan |
+| AI (opsional) | Claude API via SDK resmi `anthropic-ai/sdk` | 1.8 | - | Penilaian ulang auto-match (teks + foto) |
+| Ikon & font | Bootstrap Icons, Plus Jakarta Sans | 1.11.3 / variable | - | Antarmuka |
+| Server lokal | Laragon (Apache/MySQL) atau `php artisan serve` | - | Slide 1 (XAMPP/Laragon), Modul 9 | Menjalankan aplikasi |
+| Versi kode | Git + GitHub | - | Modul 2 | Kerja kelompok |
+| Pengujian | PHPUnit (tes fitur Laravel) | 12 | - | 34 tes otomatis |
 
 Semua library frontend disimpan di `public/vendor/` (bukan CDN). Dengan begitu, demo tetap berjalan meski internet kampus lambat. Hanya tile peta OSM yang butuh internet.
 
@@ -40,9 +40,7 @@ Browser ──HTTP──▶ routes/web.php ──▶ Middleware (auth / admin / 
                                       atau response()->json($data)  ← Client-side rendering (jQuery AJAX)
 ```
 
-**Dua cara render (slide minggu 1):**
-- **Server-side rendering:** halaman form, detail, daftar, dan admin dirender Blade.
-- **Client-side rendering (bonus nilai):** marker Peta Global, daftar "Di sekitar sini", lonceng notifikasi, chat, dan tabel DataTables dibangun di browser dari JSON.
+Aplikasi memakai dua cara render yang dibahas di slide minggu 1. Halaman form, detail, daftar, dan admin dirender di server oleh Blade (server-side rendering). Marker Peta Global, daftar "Di sekitar sini", lonceng notifikasi, chat, dan tabel DataTables dibangun di browser dari JSON (client-side rendering), yang menjadi poin bonus pada penilaian proyek akhir.
 
 ### Struktur folder penting
 
@@ -66,7 +64,7 @@ tests/Feature/             AuthTest, ReportTest, MatchServiceTest, ClaimFlowTest
 
 ## 3. Gaya Kode (ikuti ini saat menambah fitur)
 
-### 3.1 Routing — seperti Modul 11
+### 3.1 Routing (seperti Modul 11)
 ```php
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 Route::resource('categories', AdminCategoryController::class)->except('show');
@@ -75,7 +73,7 @@ Route::middleware('auth')->group(function () { ... });
 - Selalu beri `->name()` dan panggil URL dengan `route('nama')`, jangan menulis URL manual.
 - Endpoint JSON diawali `/ajax/...` (admin: `/admin/ajax/...`).
 
-### 3.2 Controller — pola resource seperti `ProductController` di Modul 12
+### 3.2 Controller (pola resource seperti `ProductController` di Modul 12)
 ```php
 public function store(Request $request)
 {
@@ -94,7 +92,7 @@ public function store(Request $request)
 - Tambah dan ubah memakai **satu view `form.blade.php`** dengan variabel `$title`, `$route`, `$method`.
 - Logika yang dipakai di beberapa controller dipindah ke `app/Services` (contoh: `ClaimFlow`), supaya controller tetap pendek.
 
-### 3.3 Model — Eloquent seperti Modul 12–13
+### 3.3 Model: Eloquent seperti Modul 12 sampai 13
 ```php
 class Report extends Model
 {
@@ -109,7 +107,7 @@ class Report extends Model
 - Relasi `hasMany` / `belongsTo`; gunakan eager loading `with('category')` di daftar agar tidak terjadi query N+1.
 - Nilai bawaan kolom ditulis juga di `$attributes`, supaya model yang baru dibuat langsung punya status yang benar.
 
-### 3.4 View — Blade seperti Modul 12
+### 3.4 View: Blade seperti Modul 12
 ```blade
 @extends('layouts.app')
 @section('title', 'Jelajah Laporan')
@@ -127,7 +125,7 @@ class Report extends Model
 - Teks antarmuka berbahasa Indonesia; nama tabel, kolom, kelas, dan variabel berbahasa Inggris (seperti `products`, `name`, `price` di modul).
 - Komponen yang berulang dijadikan `partials/` (navbar, flash, kartu laporan, label jenis).
 
-### 3.5 JavaScript — jQuery seperti Modul 6 dan Slide 9
+### 3.5 JavaScript: jQuery seperti Modul 6 dan Slide 9
 ```js
 $(document).ready(function () {
     $.ajax({
@@ -168,18 +166,20 @@ $(document).ready(function () {
 
 ## 5. Integrasi AI
 
-- **File:** `app/Services/AiMatcher.php`, dijalankan oleh `app/Jobs/ScoreMatchesWithAi.php`.
-- **Aktivasi:** isi `ANTHROPIC_API_KEY` di `.env`, lalu jalankan `php artisan queue:work` di terminal kedua. Tanpa key, aplikasi tetap memakai skor aturan.
-- **Model:** `claude-opus-5-5` (bisa diganti lewat `ANTHROPIC_MODEL`); `effort: low` karena tugasnya penilaian singkat.
-- **Format keluaran:** dipaksa JSON lewat structured output (`outputConfig.format = json_schema`), sehingga hasilnya selalu bisa di-parse.
-- **Privasi:** ciri rahasia tidak dikirim; foto yang dikirim hanya thumbnail 320 px.
-- **Ketahanan:** error API, timeout, atau penolakan (`stopReason = refusal`) ditangkap; skor aturan tetap dipakai. Fallback model di sisi server belum dipasang karena untuk penilaian barang hilang penolakan sangat jarang.
-- **Biaya:** sekitar US$0,05 per pencocokan (1 laporan hilang + maksimal 5 kandidat bergambar).
+Penilaian AI ada di `app/Services/AiMatcher.php` dan dijalankan oleh job `app/Jobs/ScoreMatchesWithAi.php`. Untuk mengaktifkannya, isi `ANTHROPIC_API_KEY` di `.env` lalu jalankan `php artisan queue:work` di terminal kedua. Tanpa key, aplikasi tetap memakai skor aturan.
+
+| Aspek | Keterangan |
+|---|---|
+| Model | `claude-opus-5-5` (bisa diganti lewat `ANTHROPIC_MODEL`), `effort: low` karena tugasnya penilaian singkat |
+| Format keluaran | JSON lewat structured output (`outputConfig.format = json_schema`), jadi hasilnya selalu bisa di-parse |
+| Privasi | Ciri rahasia tidak dikirim; foto yang dikirim hanya thumbnail 320 px |
+| Ketahanan | Error API, timeout, dan penolakan (`stopReason = refusal`) ditangkap, lalu skor aturan tetap dipakai. Fallback model di sisi server belum dipasang karena penolakan untuk penilaian barang hilang sangat jarang |
+| Biaya | Sekitar US$0,05 per pencocokan (1 laporan hilang dan maksimal 5 kandidat bergambar) |
 
 ## 6. Menjalankan Proyek
 
 Lihat `README.md` di folder proyek. Singkatnya:
-1. Laragon → **Start All** (MySQL harus hidup).
+1. Buka Laragon dan tekan Start All (MySQL harus hidup).
 2. Jalankan:
    ```
    cd C:\laragon\www\findit-campus

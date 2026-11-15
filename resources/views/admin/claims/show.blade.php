@@ -21,7 +21,7 @@
             <div class="compare">
                 <div class="side secret">
                     <h6><i class="bi bi-shield-lock me-1"></i>Ciri rahasia dari penemu</h6>
-                    <p class="mb-0 fw-semibold">{{ $claim->report->secret_detail ?: '—' }}</p>
+                    <p class="mb-0 fw-semibold">{{ $claim->report->secret_detail ?: '-' }}</p>
                 </div>
                 <div class="side">
                     <h6><i class="bi bi-person me-1"></i>Jawaban pengklaim</h6>

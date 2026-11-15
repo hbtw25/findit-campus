@@ -129,6 +129,16 @@ class ClaimController extends Controller
             return redirect()->route('claims.show', $existing)->with('error', 'Kamu sudah punya klaim aktif untuk barang ini.');
         }
 
+        // Barang yang klaimnya sudah disetujui sedang menunggu serah terima, jadi tidak menerima klaim baru
+        if ($report->claims()->where('status', 'approved')->exists()) {
+            return redirect()->route('reports.show', $report)->with('error', 'Barang ini sedang dalam proses serah terima dengan pengklaim lain.');
+        }
+
+        // Klaim yang pernah ditolak tidak bisa diulang, supaya ciri rahasia tidak bisa ditebak berkali-kali
+        if (Claim::where('report_id', $report->id)->where('user_id', $user->id)->where('status', 'rejected')->exists()) {
+            return redirect()->route('reports.show', $report)->with('error', 'Klaim kamu untuk barang ini sudah pernah ditolak. Hubungi admin bila ada kekeliruan.');
+        }
+
         $pending = Claim::where('user_id', $user->id)->where('status', 'pending')->count();
         if ($pending >= config('findit.claims.max_pending_per_user')) {
             return redirect()->route('claims.index')->with('error', 'Kamu sudah punya 3 klaim yang menunggu verifikasi. Tunggu hasilnya dulu.');
