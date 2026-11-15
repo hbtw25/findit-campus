@@ -23,7 +23,7 @@
 
 <div class="row g-4">
     <div class="col-xl-7">
-        <div class="section-card h-100">
+        <div class="section-card">
             <div class="section-title justify-content-between">
                 <span><i class="bi bi-patch-check me-2"></i>Klaim terlama yang menunggu</span>
                 <a href="{{ route('admin.claims.index') }}" class="small-caption">Semua klaim</a>
@@ -64,7 +64,7 @@
                 <a href="{{ route('reports.show', $report) }}" class="list-row py-2">
                     @include('partials.type-label', ['type' => $report->type])
                     <div class="flex-grow-1 min-w-0 text-truncate">{{ $report->title }}</div>
-                    <span class="small-caption">{{ $report->created_at->diffForHumans(null, true) }}</span>
+                    <span class="small-caption text-nowrap">{{ $report->created_at->diffForHumans(null, true) }}</span>
                 </a>
             @endforeach
         </div>

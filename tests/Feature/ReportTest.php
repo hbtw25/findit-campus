@@ -127,7 +127,10 @@ class ReportTest extends TestCase
         $match = ReportMatch::where('lost_report_id', $lost->id)->first();
         $this->assertNotNull($match);
         $this->assertGreaterThanOrEqual(60, $match->score);
-        $this->assertTrue(Alert::where('user_id', $owner->id)->where('type', 'match')->exists());
+        $alert = Alert::where('user_id', $owner->id)->where('type', 'match')->first();
+        $this->assertNotNull($alert);
+        // URL disimpan relatif agar tetap benar di host mana pun (localhost / 127.0.0.1 / IP LAN)
+        $this->assertSame("/reports/{$lost->id}#kandidat", $alert->url);
     }
 
     public function test_orang_lain_tidak_bisa_mengubah_laporan(): void

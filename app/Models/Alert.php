@@ -28,8 +28,24 @@ class Alert extends Model
             'type' => $type,
             'title' => $title,
             'body' => $body,
-            'url' => $url,
+            'url' => static::relativeUrl($url),
         ]);
+    }
+
+    // Simpan hanya path-nya (misal "/claims/3#chat") supaya link tetap benar
+    // walau aplikasi dibuka lewat localhost, 127.0.0.1, atau IP laptop saat demo
+    public static function relativeUrl(?string $url): ?string
+    {
+        if (! $url) {
+            return null;
+        }
+
+        $parts = parse_url($url);
+        $path = ($parts['path'] ?? '/')
+            .(isset($parts['query']) ? '?'.$parts['query'] : '')
+            .(isset($parts['fragment']) ? '#'.$parts['fragment'] : '');
+
+        return $path;
     }
 
     // Kirim ke semua admin aktif

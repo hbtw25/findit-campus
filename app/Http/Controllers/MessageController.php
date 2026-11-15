@@ -44,7 +44,7 @@ class MessageController extends Controller
         ]);
 
         // Beri tahu pihak lain, tanpa menumpuk notifikasi yang belum dibaca
-        $url = route('claims.show', $claim);
+        $url = Alert::relativeUrl(route('claims.show', $claim));
         $recipients = collect([$claim->user_id, $claim->report->user_id])->reject(fn ($id) => $id === Auth::id())->unique();
         foreach ($recipients as $userId) {
             $hasUnread = Alert::where('user_id', $userId)->where('type', 'message')->where('url', $url)->whereNull('read_at')->exists();

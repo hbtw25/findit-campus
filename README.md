@@ -35,6 +35,10 @@ Dokumen lengkap (PRD, tech stack, roadmap, desain, laporan) ada di folder `PROWE
 | Pengguna | nadia@student.telkomuniversity.ac.id | Pemilik headphone (chat dengan Salsa) |
 | Pengguna | bagas@student.telkomuniversity.ac.id | Mengklaim dompet (menunggu) |
 
+### Demo dengan HP (scan QR, tampilan mobile)
+
+Jalankan `php artisan serve --host=0.0.0.0`. Buka `http://IP-LAPTOP:8000` dari HP yang tersambung ke Wi-Fi yang sama; IP laptop bisa dilihat dengan `ipconfig`. Kode QR di poster otomatis memakai alamat yang sedang dibuka.
+
 ### Mengaktifkan penilaian AI (opsional)
 
 1. Isi `ANTHROPIC_API_KEY=` di `.env` (bisa juga mengganti `ANTHROPIC_MODEL`).

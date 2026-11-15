@@ -1,6 +1,7 @@
 // Tabel admin memakai jQuery DataTables dengan sumber data JSON (AJAX)
 $(document).ready(function () {
     const csrf = $('meta[name="csrf-token"]').attr('content');
+    const text = DataTable.render.text(); // tampilkan isi sel sebagai teks, bukan HTML
 
     const bahasa = {
         search: 'Cari:',
@@ -41,16 +42,16 @@ $(document).ready(function () {
             columns: [
                 { data: 'title', render: (d, t, r) => t === 'display' ? thumbCell(r.thumb, r.title) : d },
                 { data: 'type_label', render: (d, t, r) => t === 'display' ? typeHtml(r) : d },
-                { data: 'category' },
-                { data: 'place' },
-                { data: 'reporter' },
+                { data: 'category', render: text },
+                { data: 'place', render: text },
+                { data: 'reporter', render: text },
                 {
                     data: 'status_label',
                     render: (d, t, r) => t === 'display'
                         ? '<span class="status-badge s-' + r.status + '">' + d + '</span>' + (r.is_hidden ? ' <span class="status-badge s-rejected">Tersembunyi</span>' : '')
                         : d,
                 },
-                { data: 'created_at' },
+                { data: 'created_at', render: text },
                 {
                     data: null, orderable: false, searchable: false, className: 'text-end text-nowrap',
                     render: (d, t, r) => '<a href="' + r.url + '" class="btn btn-sm btn-outline-ink">Lihat</a> ' +
@@ -72,10 +73,10 @@ $(document).ready(function () {
             language: bahasa,
             columns: [
                 { data: 'item', render: (d, t, r) => t === 'display' ? thumbCell(r.thumb, r.item) : d },
-                { data: 'claimant' },
-                { data: 'nim' },
+                { data: 'claimant', render: text },
+                { data: 'nim', render: text },
                 { data: 'status_label', render: (d, t, r) => t === 'display' ? '<span class="status-badge s-' + r.status + '">' + d + '</span>' : d },
-                { data: 'created_at' },
+                { data: 'created_at', render: text },
                 {
                     data: null, orderable: false, searchable: false, className: 'text-end',
                     render: (d, t, r) => '<a href="' + r.url + '" class="btn btn-sm ' + (r.status === 'pending' ? 'btn-ink' : 'btn-outline-ink') + '">' + (r.status === 'pending' ? 'Tinjau' : 'Lihat') + '</a>',
@@ -96,8 +97,8 @@ $(document).ready(function () {
             language: bahasa,
             columns: [
                 { data: 'name', render: (d) => '<span class="fw-semibold">' + escapeHtml(d) + '</span>' },
-                { data: 'nim' },
-                { data: 'email' },
+                { data: 'nim', render: text },
+                { data: 'email', render: text },
                 { data: 'role', render: (d) => d === 'admin' ? '<span class="status-badge s-open">Admin</span>' : 'Pengguna' },
                 { data: 'reports' },
                 { data: 'claims' },

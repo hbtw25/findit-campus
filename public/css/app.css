@@ -434,3 +434,6 @@ div.dt-container .pagination .active > .page-link { background: var(--ink); bord
 
 /* Di HP zoom memakai gestur cubit, tombol zoom disembunyikan agar tidak menimpa chip filter */
 @media (max-width: 991.98px) { #global-map .leaflet-control-zoom { display: none; } }
+
+/* Tombol di dalam popup Leaflet tidak ikut warna link bawaan Leaflet */
+.leaflet-container a.btn-ink, .leaflet-container a.btn-ink:hover { color: #fff; }
