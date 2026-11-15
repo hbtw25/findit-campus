@@ -1,0 +1,74 @@
+# FindIt Campus
+
+Web pencarian barang hilang berbasis peta untuk Telkom University. Tugas Besar Pemrograman Web, Kelompok 4.
+
+- **Peta Global:** setiap laporan tampil sebagai foto barang di atas peta kampus (Leaflet + OpenStreetMap), mirip peta lokasi foto di Instagram.
+- **Auto-match:** laporan hilang dan laporan temuan dicocokkan otomatis (kategori, jarak, waktu, kemiripan teks). Bila API key diisi, Claude ikut menilai ulang dengan membaca foto.
+- **Klaim aman:** pengklaim menjawab ciri rahasia, admin memverifikasi, lalu serah terima diatur lewat chat.
+
+Dokumen lengkap (PRD, tech stack, roadmap, desain, laporan) ada di folder `PROWEB\tubes-findit`.
+
+## Menjalankan di Laptop (Laragon)
+
+1. Buka Laragon, tekan **Start All** (MySQL harus menyala).
+2. Buat database `findit_campus` lewat HeidiSQL/phpMyAdmin, atau biarkan langkah berikut membuatnya.
+3. Di terminal Laragon:
+   ```bash
+   cd C:\laragon\www\findit-campus
+   composer install
+   copy .env.example .env      # hanya bila .env belum ada
+   php artisan key:generate    # hanya bila .env baru dibuat
+   php artisan migrate:fresh --seed
+   php artisan storage:link
+   php artisan serve
+   ```
+4. Buka **http://127.0.0.1:8000**.
+
+### Akun demo (semua kata sandi `findit123`)
+
+| Peran | Email | Isi demo |
+|---|---|---|
+| Admin | admin@telkomuniversity.ac.id | 2 klaim menunggu verifikasi |
+| Pengguna | dimas@student.telkomuniversity.ac.id | Kunci motor hilang → ada kandidat temuan cocok |
+| Pengguna | rani@student.telkomuniversity.ac.id | Penemu kunci motor, payung, flashdisk |
+| Pengguna | salsa@student.telkomuniversity.ac.id | Penemu headphone (klaim disetujui + chat) |
+| Pengguna | nadia@student.telkomuniversity.ac.id | Pemilik headphone (chat dengan Salsa) |
+| Pengguna | bagas@student.telkomuniversity.ac.id | Mengklaim dompet (menunggu) |
+
+### Mengaktifkan penilaian AI (opsional)
+
+1. Isi `ANTHROPIC_API_KEY=` di `.env` (bisa juga mengganti `ANTHROPIC_MODEL`).
+2. Jalankan antrian di terminal kedua:
+   ```bash
+   php artisan queue:work
+   ```
+
+Tanpa API key, aplikasi tetap berjalan normal memakai skor aturan.
+
+## Tes Otomatis
+
+```bash
+php artisan test
+```
+26 tes fitur memakai SQLite di memori, jadi tidak menyentuh database MySQL.
+
+## Teknologi
+
+Laravel 13 (PHP 8.3) · MySQL 8 · Blade · Bootstrap 5.3 · jQuery 3.7 + AJAX/JSON · DataTables · Leaflet + MarkerCluster + OpenStreetMap · qrcode.js · html2canvas · Claude API (opsional).
+
+Semua library frontend ada di `public/vendor` (tidak butuh CDN); hanya tile peta yang butuh internet.
+
+## Struktur Singkat
+
+| Folder | Isi |
+|---|---|
+| `app/Http/Controllers` | Controller pengguna + `Admin/` |
+| `app/Models` | User, Category, CampusLocation, Report, ReportMatch, Claim, Message, Alert |
+| `app/Services` | MatchService, AiMatcher, ClaimFlow, PhotoService |
+| `config/findit.php` | Pusat kampus, radius, ambang skor, batas laporan |
+| `database/seeders` | Data demo + 34 titik gedung kampus |
+| `resources/views` | Blade per fitur |
+| `public/js` | Satu skrip jQuery per halaman |
+| `tests/Feature` | Tes login, laporan, auto-match, klaim |
+
+Peta © kontributor OpenStreetMap. Titik gedung diambil dari peta publik whereis.telkomuniversity.ac.id.
