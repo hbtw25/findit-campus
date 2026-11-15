@@ -30,7 +30,7 @@
             <div class="mb-3">
                 <label for="email" class="form-label required">Email kampus</label>
                 <input type="email" name="email" id="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}"
-                       placeholder="nama@{{ $domains[0] ?? 'student.telkomuniversity.ac.id' }}" autocomplete="email" required>
+                       placeholder="{{ 'nama@'.($domains[0] ?? 'student.telkomuniversity.ac.id') }}" autocomplete="email" required>
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror

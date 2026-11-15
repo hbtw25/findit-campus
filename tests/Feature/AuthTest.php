@@ -27,6 +27,15 @@ class AuthTest extends TestCase
         $this->assertTrue(Hash::check('rahasia123', User::first()->password));
     }
 
+    public function test_halaman_daftar_menampilkan_contoh_email_kampus(): void
+    {
+        // Mencegah kesalahan Blade "@{{" yang membuat kode tercetak mentah di placeholder
+        $this->get('/register')
+            ->assertOk()
+            ->assertSee('placeholder="nama@student.telkomuniversity.ac.id"', false)
+            ->assertDontSee('$domains', false);
+    }
+
     public function test_email_selain_kampus_ditolak(): void
     {
         $response = $this->from('/register')->post('/register', [
