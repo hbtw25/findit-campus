@@ -1,3 +1,13 @@
+// Sumber tile peta dipakai bersama oleh Peta Global, form laporan, dan peta mini.
+// Cukup ubah di sini bila ingin memakai penyedia tile lain.
+const FINDIT_TILES = {
+    url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    options: {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    },
+};
+
 // Skrip umum: token CSRF untuk AJAX, notifikasi lonceng, tombol lihat kata sandi
 $(document).ready(function () {
     // Semua request AJAX jQuery membawa token CSRF Laravel

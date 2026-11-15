@@ -28,7 +28,7 @@ Dokumen lengkap (PRD, tech stack, roadmap, desain, laporan) ada di folder `PROWE
 
 | Peran | Email | Isi demo |
 |---|---|---|
-| Admin | admin@telkomuniversity.ac.id | 2 klaim menunggu verifikasi |
+| Admin | admin@telkomuniversity.ac.id | 1 klaim menunggu verifikasi (dompet milik Bagas) |
 | Pengguna | dimas@student.telkomuniversity.ac.id | Kunci motor hilang, sudah ada kandidat temuan yang cocok |
 | Pengguna | rani@student.telkomuniversity.ac.id | Penemu kunci motor, payung, flashdisk |
 | Pengguna | salsa@student.telkomuniversity.ac.id | Penemu headphone (klaim disetujui + chat) |

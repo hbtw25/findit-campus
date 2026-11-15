@@ -6,10 +6,7 @@ $(document).ready(function () {
         zoomControl: false, dragging: !L.Browser.mobile, scrollWheelZoom: false,
     }).setView([r.lat, r.lng], 18);
 
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap',
-    }).addTo(map);
+    L.tileLayer(FINDIT_TILES.url, FINDIT_TILES.options).addTo(map);
 
     const inner = r.thumb
         ? '<img src="' + r.thumb + '" alt="">'

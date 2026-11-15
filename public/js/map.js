@@ -7,10 +7,7 @@ $(document).ready(function () {
     L.control.zoom({ position: 'topright' }).addTo(map);
 
     // Tile OpenStreetMap standar (sama seperti peta whereis Telkom University)
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    }).addTo(map);
+    L.tileLayer(FINDIT_TILES.url, FINDIT_TILES.options).addTo(map);
 
     // Kelompok marker: foto laporan terbaru tampil di depan + jumlah laporan
     const cluster = L.markerClusterGroup({

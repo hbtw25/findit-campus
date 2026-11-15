@@ -44,10 +44,7 @@ $(document).ready(function () {
     const start = hasPoint ? [startLat, startLng] : cfg.center;
 
     const map = L.map('pick-map', { scrollWheelZoom: false }).setView(start, hasPoint ? 18 : 17);
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '&copy; OpenStreetMap',
-    }).addTo(map);
+    L.tileLayer(FINDIT_TILES.url, FINDIT_TILES.options).addTo(map);
 
     // Batas area kampus (lingkaran tipis sebagai panduan)
     L.circle(cfg.center, { radius: cfg.radius, color: '#C1272D', weight: 1, dashArray: '4 6', fill: false, interactive: false }).addTo(map);
