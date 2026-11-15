@@ -56,7 +56,9 @@ $(document).ready(function () {
     }
 });
 
-// Mencegah teks dari pengguna dibaca sebagai HTML
+// Mencegah teks dari pengguna dibaca sebagai HTML. Tanda kutip ikut di-escape
+// karena teks ini juga dipakai di dalam atribut, misalnya alt="..."
 function escapeHtml(text) {
-    return $('<div>').text(text == null ? '' : text).html();
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' };
+    return String(text == null ? '' : text).replace(/[&<>"']/g, (c) => map[c]);
 }

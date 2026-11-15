@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -79,6 +80,16 @@ class AuthTest extends TestCase
 
         $this->get('/my/reports')->assertRedirect(route('login'));
         $this->assertGuest();
+    }
+
+    public function test_kategori_dengan_slug_bentrok_ditolak_dengan_pesan(): void
+    {
+        Category::create(['name' => 'Kartu & Dokumen', 'slug' => 'kartu-dokumen', 'icon' => 'person-vcard']);
+
+        $this->actingAs(User::factory()->admin()->create())
+            ->from('/admin/categories/create')
+            ->post('/admin/categories', ['name' => 'Kartu Dokumen', 'icon' => 'person-vcard'])
+            ->assertSessionHasErrors('slug');
     }
 
     public function test_halaman_admin_khusus_admin(): void

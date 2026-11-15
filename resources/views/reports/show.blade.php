@@ -153,10 +153,12 @@
                             <a href="{{ route('claims.create', ['report' => $other, 'lost' => $report->id]) }}" class="btn btn-brand btn-sm">Ajukan klaim</a>
                         @endif
                         <a href="{{ route('reports.show', $other) }}" class="btn btn-outline-ink btn-sm">Lihat</a>
-                        <form method="POST" action="{{ route('matches.dismiss', $match) }}">
-                            @csrf
-                            <button class="btn btn-link btn-sm text-muted">{{ $report->isLost() ? 'Bukan barang saya' : 'Bukan ini' }}</button>
-                        </form>
+                        @if ($report->isLost())
+                            <form method="POST" action="{{ route('matches.dismiss', $match) }}">
+                                @csrf
+                                <button class="btn btn-link btn-sm text-muted">Bukan barang saya</button>
+                            </form>
+                        @endif
                     </div>
                 </div>
             </div>

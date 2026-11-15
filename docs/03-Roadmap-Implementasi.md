@@ -1,6 +1,6 @@
 # Roadmap Implementasi FindIt Campus
 
-Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1 sampai F12 terimplementasi, 34 tes otomatis lulus, dan data demo siap untuk presentasi.
+Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1 sampai F12 terimplementasi, 41 tes otomatis lulus, dan data demo siap untuk presentasi.
 
 Roadmap ini dipakai kelompok untuk:
 1. memahami kode bagian masing-masing (sesuai PIC);
@@ -43,7 +43,7 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 | F5 | Klaim Kepemilikan | ✅ | Ciri rahasia, maksimal 3 klaim menunggu, tidak bisa klaim laporan sendiri |
 | F6 | Komunikasi & Pengembalian | ✅ | Chat AJAX (polling 5 detik), konfirmasi diserahkan |
 | F7 | Admin | ✅ | Dashboard, DataTables JSON, verifikasi klaim berdampingan, CRUD kategori |
-| F8 | Integrasi & Pengujian | ✅ | 34 tes fitur lulus, seeder demo |
+| F8 | Integrasi & Pengujian | ✅ | 41 tes fitur lulus, seeder demo |
 | F9 | Peta Foto ala Instagram | ✅ | Marker foto + cluster foto terbaru + jumlah |
 | F10 | Bagikan Link/QR/Poster | ✅ | `/r/{kode}`, QR, poster A5 (print), unduh story 1080×1920 |
 | F11 | AI Auto-Match | ✅ | Skor aturan selalu jalan; Claude menilai ulang bila API key diisi |
@@ -83,3 +83,8 @@ Semua skenario di bawah sudah diuji manual di browser dan/atau lewat tes otomati
 | 18 | Pelapor menutup laporan saat klaim sudah disetujui | Ditolak; admin yang menutup akan membatalkan semua klaim berjalan | ✅ tes otomatis |
 | 19 | Admin menonaktifkan akun yang sedang login | Pengguna langsung keluar pada klik berikutnya | ✅ tes otomatis |
 | 20 | Mengirim chat setelah barang diserahkan | Ditolak (403), riwayat chat tetap bisa dibaca | ✅ tes otomatis |
+| 21 | Judul laporan berisi tanda kutip dan kode HTML | Tampil sebagai teks biasa di peta, tidak dijalankan | ✅ browser |
+| 22 | Admin menyetujui klaim miliknya sendiri | Ditolak (403), harus admin lain | ✅ tes otomatis |
+| 23 | Dua admin menyetujui dua klaim berbeda untuk barang yang sama | Persetujuan kedua ditolak (409) | ✅ tes otomatis |
+| 24 | Penemu menekan "Bukan ini" pada kandidat | Tombol tidak ada; permintaan langsung ditolak (403) | ✅ tes otomatis |
+| 25 | Membuka /reports?q[]=x | Kembali dengan pesan validasi, bukan error 500 | ✅ tes otomatis |

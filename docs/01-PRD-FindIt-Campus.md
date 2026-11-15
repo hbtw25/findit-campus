@@ -183,7 +183,7 @@ Kandidat dengan skor akhir ≥ 60 memicu notifikasi ke **pemilik laporan hilang*
 | B3 | Login dibatasi 5 percobaan per menit (middleware `throttle`). Akun nonaktif ditolak dengan pesan jelas. |
 | B4 | Judul 5 sampai 80 karakter; deskripsi minimal 20 karakter; kategori wajib; waktu kejadian tidak boleh di masa depan dan paling lama 60 hari lalu. |
 | B5 | Pin lokasi wajib dan harus dalam radius 1,5 km dari pusat kampus. |
-| B6 | Foto wajib untuk laporan Ditemukan dan opsional untuk Hilang; jpg/png/webp maksimal 4 MB; disimpan diperkecil (sisi terpanjang 1.280 px) + thumbnail 320 px. |
+| B6 | Foto wajib untuk laporan Ditemukan dan opsional untuk Hilang; jpg/png/webp maksimal 4 MB dan 6000 x 6000 piksel; disimpan diperkecil (sisi terpanjang 1.280 px) + thumbnail 320 px. |
 | B7 | Ciri rahasia wajib untuk laporan Ditemukan (minimal 5 karakter), tidak pernah tampil publik, dan tidak dikirim ke AI. |
 | B8 | Maksimal 10 laporan baru per pengguna per hari. |
 | B9 | Klaim hanya untuk laporan Ditemukan berstatus Aktif/Proses Klaim; tidak bisa mengklaim laporan sendiri; satu klaim aktif per laporan per pengguna; maksimal 3 klaim Menunggu per pengguna. |
@@ -196,6 +196,9 @@ Kandidat dengan skor akhir ≥ 60 memicu notifikasi ke **pemilik laporan hilang*
 | B16 | Pelapor tidak bisa menutup laporan selama ada klaim yang disetujui. Admin tetap bisa menutup; semua klaim yang masih berjalan otomatis dibatalkan dan pengklaimnya diberi notifikasi. |
 | B17 | Akun yang dinonaktifkan admin langsung keluar pada request berikutnya. |
 | B18 | Setelah barang diserahkan, chat serah terima hanya bisa dibaca. |
+| B19 | Admin tidak boleh memutuskan klaim yang melibatkan akunnya sendiri (sebagai pengklaim atau penemu); keputusan diserahkan ke admin lain. |
+| B20 | Jenis laporan (hilang atau temuan) tidak bisa diganti setelah laporan dibuat. Bila salah pilih, pelapor menutup laporan lalu membuat laporan baru. |
+| B21 | Hanya pemilik laporan hilang yang bisa menandai kandidat sebagai "Bukan barang saya". Klaim yang dibatalkan mengembalikan kandidatnya ke daftar; klaim yang ditolak menyembunyikannya. |
 
 ## 10. Model Data
 

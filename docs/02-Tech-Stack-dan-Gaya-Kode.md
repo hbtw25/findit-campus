@@ -22,7 +22,7 @@ Kode sumber: `C:\laragon\www\findit-campus` (folder standar proyek Laragon).
 | Ikon & font | Bootstrap Icons, Plus Jakarta Sans | 1.11.3 / variable | - | Antarmuka |
 | Server lokal | Laragon (Apache/MySQL) atau `php artisan serve` | - | Slide 1 (XAMPP/Laragon), Modul 9 | Menjalankan aplikasi |
 | Versi kode | Git + GitHub | - | Modul 2 | Kerja kelompok |
-| Pengujian | PHPUnit (tes fitur Laravel) | 12 | - | 34 tes otomatis |
+| Pengujian | PHPUnit (tes fitur Laravel) | 12 | - | 41 tes otomatis |
 
 Semua library frontend disimpan di `public/vendor/` (bukan CDN). Dengan begitu, demo tetap berjalan meski internet kampus lambat. Hanya tile peta OSM yang butuh internet.
 

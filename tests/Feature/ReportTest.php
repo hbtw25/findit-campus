@@ -7,7 +7,6 @@ use App\Models\Category;
 use App\Models\Report;
 use App\Models\ReportMatch;
 use App\Models\User;
-use App\Services\MatchService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -134,22 +133,39 @@ class ReportTest extends TestCase
         $this->assertSame("/reports/{$lost->id}#kandidat", $alert->url);
     }
 
-    public function test_mengubah_jenis_laporan_menghapus_kandidat_lama(): void
+    public function test_jenis_laporan_tidak_bisa_diganti_saat_diubah(): void
     {
         $owner = User::factory()->create();
         $lost = Report::factory()->create(['user_id' => $owner->id, 'category_id' => $this->category->id]);
-        Report::factory()->found()->create(['category_id' => $this->category->id, 'lat' => -6.97290, 'lng' => 107.62951]);
-        app(MatchService::class)->refreshFor($lost);
-        $this->assertSame(1, ReportMatch::where('lost_report_id', $lost->id)->count());
 
-        // Pemilik ternyata salah pilih jenis: laporan diubah menjadi barang temuan
+        // Permintaan mengganti jenis diabaikan; data lain tetap tersimpan
         $this->actingAs($owner)->put("/reports/{$lost->id}", $this->payload([
             'type' => 'found',
-            'photo' => UploadedFile::fake()->image('kunci.jpg'),
-            'secret_detail' => 'Ada kunci loker nomor 17',
+            'title' => 'Kunci motor Honda Beat',
         ]))->assertRedirect();
 
-        $this->assertSame(0, ReportMatch::where('lost_report_id', $lost->id)->count());
+        $lost->refresh();
+        $this->assertSame('lost', $lost->type);
+        $this->assertSame('Kunci motor Honda Beat', $lost->title);
+    }
+
+    public function test_filter_jelajah_yang_tidak_valid_tidak_membuat_error(): void
+    {
+        $this->get('/reports?q[]=x')->assertRedirect();
+        $this->get('/reports?type=semua')->assertRedirect();
+        $this->get('/reports?q=dompet&type=found')->assertOk();
+    }
+
+    public function test_gambar_berdimensi_terlalu_besar_ditolak(): void
+    {
+        $this->actingAs(User::factory()->create())
+            ->from('/reports/create')
+            ->post('/reports', $this->payload([
+                'type' => 'found',
+                'photo' => UploadedFile::fake()->image('besar.jpg', 6500, 100),
+                'secret_detail' => 'Ada kunci loker nomor 17',
+            ]))
+            ->assertSessionHasErrors('photo');
     }
 
     public function test_admin_menampilkan_lagi_laporan_menghitung_ulang_kandidat(): void

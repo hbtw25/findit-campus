@@ -25,7 +25,13 @@ class ReportController extends Controller
     // Halaman Jelajah: daftar laporan dengan filter + paginasi
     public function index(Request $request)
     {
-        $filters = $request->only('q', 'type', 'category', 'location', 'days');
+        $filters = $request->validate([
+            'q' => 'nullable|string|max:60',
+            'type' => 'nullable|in:lost,found',
+            'category' => 'nullable|integer',
+            'location' => 'nullable|integer',
+            'days' => 'nullable|integer|in:7,30,90',
+        ]);
 
         $reports = Report::with('category', 'campusLocation')
             ->visible()
@@ -81,7 +87,8 @@ class ReportController extends Controller
         $user = Auth::user();
         $isOwner = $user && $user->id === $report->user_id;
 
-        // Laporan tersembunyi atau sudah selesai hanya bisa dibuka pemilik dan admin
+        // Laporan yang disembunyikan admin hanya bisa dibuka pemiliknya dan admin.
+        // Laporan Selesai/Ditutup tetap bisa dibuka lewat tautan sebagai riwayat.
         if ($report->is_hidden && ! ($isOwner || $user?->isAdmin())) {
             abort(404);
         }
@@ -122,6 +129,8 @@ class ReportController extends Controller
         $this->authorizeOwner($report);
         abort_unless($report->status === 'open', 403, 'Laporan hanya bisa diubah saat masih Aktif.');
 
+        // Jenis laporan (hilang/temuan) tidak bisa diganti setelah dibuat; buat laporan baru bila salah pilih
+        $request->merge(['type' => $report->type]);
         $validated = $this->validateReport($request, $report);
 
         $oldPhoto = [$report->photo, $report->photo_thumb];
@@ -228,7 +237,7 @@ class ReportController extends Controller
             'location_note' => 'nullable|string|max:120',
             'lat' => 'required|numeric|between:-90,90',
             'lng' => 'required|numeric|between:-180,180',
-            'photo' => ($needsPhoto ? 'required' : 'nullable').'|image|mimes:jpg,jpeg,png,webp|max:'.config('findit.reports.photo_max_kb'),
+            'photo' => ($needsPhoto ? 'required' : 'nullable').'|image|mimes:jpg,jpeg,png,webp|dimensions:max_width=6000,max_height=6000|max:'.config('findit.reports.photo_max_kb'),
             'secret_detail' => 'required_if:type,found|nullable|string|min:5|max:255',
         ], [
             'event_at.before_or_equal' => 'Waktu kejadian tidak boleh di masa depan.',

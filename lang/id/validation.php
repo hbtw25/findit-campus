@@ -12,6 +12,7 @@ return [
     'boolean' => ':attribute harus benar atau salah.',
     'confirmed' => 'Konfirmasi :attribute tidak cocok.',
     'date' => ':attribute bukan tanggal yang valid.',
+    'dimensions' => 'Ukuran :attribute terlalu besar (maksimal 6000 x 6000 piksel).',
     'digits_between' => ':attribute harus berupa :min sampai :max digit angka.',
     'email' => ':attribute harus berupa alamat email yang valid.',
     'exists' => ':attribute yang dipilih tidak valid.',

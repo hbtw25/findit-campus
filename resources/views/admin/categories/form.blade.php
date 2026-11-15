@@ -17,6 +17,9 @@
                 @error('name')
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
+                @error('slug')
+                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                @enderror
             </div>
             <div class="mb-4">
                 <label for="icon" class="form-label required">Ikon (nama Bootstrap Icons)</label>

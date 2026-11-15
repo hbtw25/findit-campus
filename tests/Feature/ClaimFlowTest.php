@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Category;
 use App\Models\Claim;
 use App\Models\Report;
+use App\Models\ReportMatch;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -144,6 +145,64 @@ class ClaimFlowTest extends TestCase
 
         $this->actingAs($this->owner)->getJson("/ajax/claims/{$claim->id}/messages")->assertOk();
         $this->actingAs($this->owner)->postJson("/ajax/claims/{$claim->id}/messages", ['body' => 'Halo'])->assertForbidden();
+    }
+
+    public function test_admin_tidak_bisa_memutuskan_klaim_miliknya_sendiri(): void
+    {
+        $claim = Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => $this->admin->id]));
+
+        $this->actingAs($this->admin)->post("/admin/claims/{$claim->id}/approve")->assertForbidden();
+
+        $this->assertSame('pending', $claim->fresh()->status);
+    }
+
+    public function test_hanya_pemilik_laporan_hilang_yang_bisa_menyembunyikan_kandidat(): void
+    {
+        $lost = Report::factory()->create(['user_id' => $this->owner->id, 'category_id' => $this->found->category_id]);
+        $match = ReportMatch::create([
+            'lost_report_id' => $lost->id, 'found_report_id' => $this->found->id,
+            'rule_score' => 80, 'score' => 80, 'distance_m' => 50,
+        ]);
+
+        $this->actingAs($this->finder)->post("/matches/{$match->id}/dismiss")->assertForbidden();
+        $this->assertSame('suggested', $match->fresh()->status);
+
+        $this->actingAs($this->owner)->post("/matches/{$match->id}/dismiss")->assertRedirect();
+        $this->assertSame('dismissed', $match->fresh()->status);
+    }
+
+    public function test_kandidat_kembali_saat_klaim_dibatalkan_dan_hilang_saat_ditolak(): void
+    {
+        $lost = Report::factory()->create(['user_id' => $this->owner->id, 'category_id' => $this->found->category_id]);
+        $match = ReportMatch::create([
+            'lost_report_id' => $lost->id, 'found_report_id' => $this->found->id,
+            'rule_score' => 80, 'score' => 80, 'distance_m' => 50,
+        ]);
+
+        $this->actingAs($this->owner)->post("/reports/{$this->found->id}/claims", $this->claimPayload(['lost_report_id' => $lost->id]));
+        $this->assertSame('claimed', $match->fresh()->status);
+
+        $claim = Claim::where('user_id', $this->owner->id)->first();
+        $this->actingAs($this->owner)->post("/claims/{$claim->id}/cancel");
+        $this->assertSame('suggested', $match->fresh()->status);
+
+        $this->actingAs($this->owner)->post("/reports/{$this->found->id}/claims", $this->claimPayload(['lost_report_id' => $lost->id]));
+        $second = Claim::where('user_id', $this->owner->id)->where('status', 'pending')->first();
+        $this->actingAs($this->admin)->post("/admin/claims/{$second->id}/reject", ['admin_note' => 'Ciri yang disebutkan tidak sesuai.']);
+        $this->assertSame('dismissed', $match->fresh()->status);
+    }
+
+    public function test_persetujuan_kedua_untuk_barang_yang_sama_ditolak(): void
+    {
+        $c1 = Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => $this->owner->id]));
+        $c2 = Claim::create($this->claimPayload(['report_id' => $this->found->id, 'user_id' => User::factory()->create()->id]));
+        $this->found->update(['status' => 'in_claim']);
+        // Simulasi dua tab admin: klaim kedua masih terlihat "pending" saat klaim pertama disetujui
+        $c1->update(['status' => 'approved']);
+
+        $this->actingAs($this->admin)->post("/admin/claims/{$c2->id}/approve")->assertStatus(409);
+
+        $this->assertSame('pending', $c2->fresh()->status);
     }
 
     public function test_serah_terima_menyelesaikan_laporan_temuan_dan_hilang(): void

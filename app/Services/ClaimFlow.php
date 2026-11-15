@@ -7,6 +7,7 @@ use App\Models\Claim;
 use App\Models\Report;
 use App\Models\ReportMatch;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 // Aturan perpindahan status klaim (PRD bagian 5.3) dipakai oleh controller pengguna dan admin
 class ClaimFlow
@@ -15,12 +16,25 @@ class ClaimFlow
 
     public function approve(Claim $claim, User $admin, ?string $note = null): void
     {
-        $claim->update([
-            'status' => 'approved',
-            'admin_note' => $note,
-            'reviewed_by' => $admin->id,
-            'reviewed_at' => now(),
-        ]);
+        // Dikunci dalam transaksi supaya dua admin yang menyetujui bersamaan tidak menghasilkan dua klaim disetujui
+        DB::transaction(function () use ($claim, $admin, $note) {
+            $report = Report::whereKey($claim->report_id)->lockForUpdate()->first();
+            $claim->refresh();
+
+            if ($claim->status !== 'pending' || ! $report->isOpen()) {
+                abort(409, 'Klaim ini sudah diputuskan atau laporannya sudah tidak aktif.');
+            }
+            if ($report->claims()->where('status', 'approved')->exists()) {
+                abort(409, 'Barang ini sudah punya klaim yang disetujui.');
+            }
+
+            $claim->update([
+                'status' => 'approved',
+                'admin_note' => $note,
+                'reviewed_by' => $admin->id,
+                'reviewed_at' => now(),
+            ]);
+        });
 
         // Klaim lain yang masih menunggu untuk barang yang sama otomatis ditolak (aturan B10)
         $others = Claim::where('report_id', $claim->report_id)
@@ -54,6 +68,8 @@ class ClaimFlow
         ]);
 
         $this->syncReportStatus($claim->report);
+        // Barang ini terbukti bukan milik pengklaim, jadi kandidatnya tidak ditampilkan lagi
+        $this->setMatchStatus($claim, 'dismissed');
 
         Alert::send($claim->user_id, 'claim_update', 'Klaim kamu ditolak', $note, route('claims.show', $claim));
     }
@@ -62,6 +78,18 @@ class ClaimFlow
     {
         $claim->update(['status' => 'cancelled']);
         $this->syncReportStatus($claim->report);
+        // Klaim dibatalkan pengklaim sendiri: kandidatnya dikembalikan ke daftar
+        $this->setMatchStatus($claim, 'suggested');
+    }
+
+    private function setMatchStatus(Claim $claim, string $status): void
+    {
+        if ($claim->lost_report_id) {
+            ReportMatch::where('lost_report_id', $claim->lost_report_id)
+                ->where('found_report_id', $claim->report_id)
+                ->where('status', 'claimed')
+                ->update(['status' => $status]);
+        }
     }
 
     // Serah terima selesai: laporan temuan dan laporan hilang terkait menjadi Selesai

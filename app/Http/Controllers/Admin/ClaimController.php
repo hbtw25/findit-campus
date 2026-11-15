@@ -54,6 +54,8 @@ class ClaimController extends Controller
     public function approve(Request $request, Claim $claim)
     {
         abort_unless($claim->status === 'pending', 403, 'Klaim ini sudah diputuskan.');
+        // Admin tidak boleh memutuskan klaim miliknya sendiri atau klaim atas barang yang ia temukan
+        abort_if(in_array(Auth::id(), [$claim->user_id, $claim->report->user_id]), 403, 'Klaim ini melibatkan akunmu, minta admin lain untuk memutuskan.');
 
         $validated = $request->validate([
             'admin_note' => 'nullable|string|max:255',
@@ -67,6 +69,8 @@ class ClaimController extends Controller
     public function reject(Request $request, Claim $claim)
     {
         abort_unless($claim->status === 'pending', 403, 'Klaim ini sudah diputuskan.');
+        // Admin tidak boleh memutuskan klaim miliknya sendiri atau klaim atas barang yang ia temukan
+        abort_if(in_array(Auth::id(), [$claim->user_id, $claim->report->user_id]), 403, 'Klaim ini melibatkan akunmu, minta admin lain untuk memutuskan.');
 
         $validated = $request->validate([
             'admin_note' => 'required|string|min:10|max:255',

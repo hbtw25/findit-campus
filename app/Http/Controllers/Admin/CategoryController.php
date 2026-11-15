@@ -29,11 +29,12 @@ class CategoryController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge(['slug' => Str::slug((string) $request->input('name'))]);
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:40|unique:categories,name',
+            'slug' => 'unique:categories,slug',
             'icon' => 'required|string|max:40|regex:/^[a-z0-9-]+$/',
-        ]);
-        $validated['slug'] = Str::slug($validated['name']);
+        ], ['slug.unique' => 'Nama ini terlalu mirip dengan kategori yang sudah ada.']);
 
         Category::create($validated);
 
@@ -52,11 +53,12 @@ class CategoryController extends Controller
 
     public function update(Request $request, Category $category)
     {
+        $request->merge(['slug' => Str::slug((string) $request->input('name'))]);
         $validated = $request->validate([
             'name' => 'required|string|min:3|max:40|unique:categories,name,'.$category->id,
+            'slug' => 'unique:categories,slug,'.$category->id,
             'icon' => 'required|string|max:40|regex:/^[a-z0-9-]+$/',
-        ]);
-        $validated['slug'] = Str::slug($validated['name']);
+        ], ['slug.unique' => 'Nama ini terlalu mirip dengan kategori yang sudah ada.']);
 
         $category->update($validated);
 

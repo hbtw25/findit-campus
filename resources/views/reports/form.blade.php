@@ -28,14 +28,17 @@
             <div class="section-card">
                 <div class="section-title">Jenis laporan</div>
                 <div class="type-choice">
-                    <input type="radio" name="type" id="type-lost" value="lost" @checked($type === 'lost')>
+                    <input type="radio" name="type" id="type-lost" value="lost" @checked($type === 'lost') @disabled($method === 'PUT')>
                     <label for="type-lost"><i class="bi bi-search" style="color: var(--lost)"></i><span>Saya kehilangan<small>Cari barang milikku</small></span></label>
-                    <input type="radio" name="type" id="type-found" value="found" @checked($type === 'found')>
+                    <input type="radio" name="type" id="type-found" value="found" @checked($type === 'found') @disabled($method === 'PUT')>
                     <label for="type-found"><i class="bi bi-check-circle" style="color: var(--found)"></i><span>Saya menemukan<small>Kembalikan ke pemiliknya</small></span></label>
                 </div>
                 @error('type')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
                 @enderror
+                @if ($method === 'PUT')
+                    <div class="form-text mt-2">Jenis laporan tidak bisa diganti. Bila salah pilih, tutup laporan ini lalu buat laporan baru.</div>
+                @endif
             </div>
 
             <div class="section-card">

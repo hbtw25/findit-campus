@@ -39,6 +39,10 @@ Dokumen lengkap (PRD, tech stack, roadmap, desain, laporan) ada di folder `PROWE
 
 Jalankan `php artisan serve --host=0.0.0.0`. Buka `http://IP-LAPTOP:8000` dari HP yang tersambung ke Wi-Fi yang sama; IP laptop bisa dilihat dengan `ipconfig`. Kode QR di poster otomatis memakai alamat yang sedang dibuka.
 
+### Sebelum presentasi
+
+Ubah `APP_DEBUG=true` menjadi `APP_DEBUG=false` di `.env`, supaya bila terjadi error yang tampil adalah halaman ramah, bukan stack trace. Jalankan `php artisan migrate:fresh --seed` untuk mengembalikan data demo ke kondisi awal.
+
 ### Mengaktifkan penilaian AI (opsional)
 
 1. Isi `ANTHROPIC_API_KEY=` di `.env` (bisa juga mengganti `ANTHROPIC_MODEL`).
@@ -54,7 +58,7 @@ Tanpa API key, aplikasi tetap berjalan normal memakai skor aturan.
 ```bash
 php artisan test
 ```
-34 tes fitur memakai SQLite di memori, jadi tidak menyentuh database MySQL.
+41 tes fitur memakai SQLite di memori, jadi tidak menyentuh database MySQL.
 
 ## Teknologi
 
