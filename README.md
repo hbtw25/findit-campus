@@ -6,7 +6,7 @@ Web pencarian barang hilang berbasis peta untuk Telkom University. Tugas Besar P
 - **Auto-match:** laporan hilang dan laporan temuan dicocokkan otomatis (kategori, jarak, waktu, kemiripan teks). Bila API key diisi, Claude ikut menilai ulang dengan membaca foto.
 - **Klaim aman:** pengklaim menjawab ciri rahasia, admin memverifikasi, lalu serah terima diatur lewat chat.
 
-Dokumen lengkap (PRD, tech stack, roadmap, desain, laporan) ada di folder `PROWEB\tubes-findit`.
+Dokumen lengkap ada di folder `docs/`: PRD, tech stack dan gaya kode, roadmap, desain FigCraft (`docs/design`), dan laporan Tubes (`docs/laporan`).
 
 ## Menjalankan di Laptop (Laragon)
 
