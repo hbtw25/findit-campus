@@ -61,7 +61,7 @@ $(document).ready(function () {
         },
     });
 
-    // ---------- Data laporan (AJAX JSON → dirender di browser) ----------
+    // ---------- Data laporan (JSON dari AJAX, dirender di browser) ----------
     function photoMarker(r) {
         const inner = r.thumb
             ? '<img src="' + r.thumb + '" alt="' + escapeHtml(r.title) + '">'
@@ -200,7 +200,7 @@ $(document).ready(function () {
         });
     }
 
-    // Klik item di daftar → terbang ke marker dan buka pratinjau
+    // Klik item di daftar: peta terbang ke marker lalu membuka pratinjau
     $(document).on('click keypress', '#report-list .list-row', function (e) {
         if (e.type === 'keypress' && e.key !== 'Enter') return;
         const marker = markersById[$(this).data('id')];
@@ -211,7 +211,7 @@ $(document).ready(function () {
         });
     });
 
-    // Filter berubah → muat ulang marker tanpa reload halaman
+    // Filter berubah: muat ulang marker tanpa reload halaman
     let typingTimer;
     $('#map-filter').on('change', 'select, input[type=radio]', loadReports);
     $('#map-filter').on('input', 'input[type=search]', function () {

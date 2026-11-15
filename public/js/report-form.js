@@ -72,7 +72,7 @@ $(document).ready(function () {
     map.on('click', function (e) { setPoint(e.latlng); });
     pin.on('dragend', function () { setPoint(pin.getLatLng()); });
 
-    // Pilih gedung → peta terbang ke gedung dan pin dipindahkan ke sana
+    // Pilih gedung: peta terbang ke gedung dan pin dipindahkan ke sana
     $('#campus_location_id').on('change', function () {
         const opt = $(this).find(':selected');
         if (!opt.data('lat')) return;
