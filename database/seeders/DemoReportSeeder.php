@@ -8,6 +8,7 @@ use App\Models\Claim;
 use App\Models\Report;
 use App\Models\ReportMatch;
 use App\Models\User;
+use App\Services\AiMatcher;
 use App\Services\ClaimFlow;
 use App\Services\MatchService;
 use App\Services\PhotoService;
@@ -99,11 +100,12 @@ class DemoReportSeeder extends Seeder
             $created[$i] = $report;
         }
 
-        // Jalankan auto-match untuk semua laporan hilang (membuat kandidat + notifikasi)
+        // Jalankan auto-match untuk semua laporan hilang (membuat kandidat + notifikasi).
+        // Bila API key AI terisi, penilaian AI dijalankan langsung tanpa antrian.
         $matcher = app(MatchService::class);
         foreach ($created as $report) {
-            if ($report->isLost()) {
-                $matcher->refreshFor($report);
+            if ($report->isLost() && $matcher->refreshFor($report)->isNotEmpty() && AiMatcher::enabled()) {
+                app(AiMatcher::class)->scoreLostReport($report);
             }
         }
 

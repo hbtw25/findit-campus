@@ -22,6 +22,13 @@ class ReportMatch extends Model
         ];
     }
 
+    // Kandidat yang ditampilkan ke pengguna: masih aktif dan skornya (aturan atau AI) di atas ambang.
+    // Kandidat yang dinilai AI terlalu rendah tetap tersimpan agar tidak dinilai ulang terus.
+    public function scopeShown($query)
+    {
+        return $query->where('status', 'suggested')->where('score', '>=', config('findit.match.min_score'));
+    }
+
     public function lostReport()
     {
         return $this->belongsTo(Report::class, 'lost_report_id');

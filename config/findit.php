@@ -36,9 +36,25 @@ return [
         'max_candidates' => 5,
     ],
 
-    // Penilaian AI (opsional). Aktif bila ANTHROPIC_API_KEY terisi.
+    // Penilaian AI (opsional). Penyedia dicoba berurutan sesuai AI_PROVIDERS;
+    // penyedia tanpa API key dilewati. Bila semua gagal, skor aturan tetap dipakai.
     'ai' => [
-        'api_key' => env('ANTHROPIC_API_KEY'),
-        'model' => env('ANTHROPIC_MODEL', 'claude-opus-5-5'),
+        'providers' => array_values(array_filter(array_map('trim', explode(',', (string) env('AI_PROVIDERS', 'gemini'))))),
+        'timeout' => 45,
+
+        // Google AI Studio, tier gratis
+        'gemini' => [
+            'api_key' => env('GEMINI_API_KEY'),
+            'model' => env('GEMINI_MODEL') ?: 'gemini-3.5-flash-lite',
+            'url' => 'https://generativelanguage.googleapis.com/v1beta/models',
+        ],
+
+        // OpenCode Console (format OpenAI chat completions). Model gratisnya hanya bisa dipakai
+        // dari aplikasi OpenCode, jadi dari website perlu model berbayar atau langganan OpenCode Go.
+        'opencode' => [
+            'api_key' => env('OPENCODE_API_KEY'),
+            'model' => env('OPENCODE_MODEL') ?: 'deepseek-v4.1-flash',
+            'url' => 'https://opencode.ai/inference/openai/v1/chat/completions',
+        ],
     ],
 ];

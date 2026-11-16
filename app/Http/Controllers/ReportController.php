@@ -96,10 +96,10 @@ class ReportController extends Controller
         $matches = collect();
         if ($isOwner && $report->isLost()) {
             $matches = $report->foundMatches()->with('foundReport.campusLocation')
-                ->where('status', 'suggested')->orderByDesc('score')->get();
+                ->shown()->orderByDesc('score')->get();
         } elseif ($isOwner && $report->isFound()) {
             $matches = $report->lostMatches()->with('lostReport.campusLocation')
-                ->where('status', 'suggested')->orderByDesc('score')->get();
+                ->shown()->orderByDesc('score')->get();
         }
 
         $myClaim = $user
@@ -206,8 +206,8 @@ class ReportController extends Controller
     {
         $reports = Report::with('category', 'campusLocation')
             ->withCount([
-                'foundMatches as lost_candidates' => fn ($q) => $q->where('status', 'suggested'),
-                'lostMatches as found_candidates' => fn ($q) => $q->where('status', 'suggested'),
+                'foundMatches as lost_candidates' => fn ($q) => $q->shown(),
+                'lostMatches as found_candidates' => fn ($q) => $q->shown(),
                 'claims as pending_claims' => fn ($q) => $q->where('status', 'pending'),
             ])
             ->where('user_id', Auth::id())

@@ -18,11 +18,11 @@ Kode sumber: `C:\laragon\www\findit-campus` (folder standar proyek Laragon).
 | Plugin jQuery | DataTables | 2.1.8 | Rubrik COTS ("JQuery Plugin", "JSON untuk datatable") | Tabel admin |
 | Peta (GIS) | Leaflet + Leaflet.markercluster + tile OpenStreetMap | 1.9.4 / 1.5.3 | Tidak ada di materi; sama dengan peta whereis.telkomuniversity.ac.id | Peta Global, pemilih lokasi, peta mini |
 | QR & story | qrcode.js, html2canvas | 1.0.0 / 1.4.1 | - | Fitur bagikan |
-| AI (opsional) | Claude API via SDK resmi `anthropic-ai/sdk` | 1.8 | - | Penilaian ulang auto-match (teks + foto) |
+| AI (opsional) | Gemini API dari Google AI Studio (tier gratis) lewat HTTP client Laravel, cadangan OpenCode Console | `gemini-3.5-flash-lite` | Slide 9 (JSON) | Penilaian ulang auto-match (teks + foto) |
 | Ikon & font | Bootstrap Icons, Plus Jakarta Sans | 1.11.3 / variable | - | Antarmuka |
 | Server lokal | Laragon (Apache/MySQL) atau `php artisan serve` | - | Slide 1 (XAMPP/Laragon), Modul 9 | Menjalankan aplikasi |
 | Versi kode | Git + GitHub | - | Modul 2 | Kerja kelompok |
-| Pengujian | PHPUnit (tes fitur Laravel) | 12 | - | 42 tes otomatis |
+| Pengujian | PHPUnit (tes fitur Laravel) | 12 | - | 48 tes otomatis |
 
 Semua library frontend disimpan di `public/vendor/` (bukan CDN). Dengan begitu, demo tetap berjalan meski internet kampus lambat. Hanya tile peta OSM yang butuh internet.
 
@@ -51,7 +51,7 @@ app/
   Http/Controllers/Admin/  DashboardController, ReportController, ClaimController, UserController, CategoryController
   Http/Middleware/         EnsureUserIsAdmin (alias 'admin')
   Models/                  User, Category, CampusLocation, Report, ReportMatch, Claim, Message, Alert
-  Services/                MatchService (skor aturan), AiMatcher (Claude), ClaimFlow (status klaim), PhotoService (GD)
+  Services/                MatchService (skor aturan), AiMatcher (Gemini, cadangan OpenCode), ClaimFlow (status klaim), PhotoService (GD)
   Jobs/                    ScoreMatchesWithAi (antrian)
 config/findit.php          Pusat kampus, radius, batas laporan, ambang skor, API key AI
 database/migrations/       Skema 8 tabel
@@ -166,15 +166,20 @@ $(document).ready(function () {
 
 ## 5. Integrasi AI
 
-Penilaian AI ada di `app/Services/AiMatcher.php` dan dijalankan oleh job `app/Jobs/ScoreMatchesWithAi.php`. Untuk mengaktifkannya, isi `ANTHROPIC_API_KEY` di `.env` lalu jalankan `php artisan queue:work` di terminal kedua. Tanpa key, aplikasi tetap memakai skor aturan.
+Penilaian AI ada di `app/Services/AiMatcher.php` dan dijalankan oleh job `app/Jobs/ScoreMatchesWithAi.php`. Untuk mengaktifkannya, buat API key gratis di Google AI Studio (aistudio.google.com, menu Get API key), isi `GEMINI_API_KEY` di `.env`, lalu jalankan `php artisan queue:work` di terminal kedua. Tanpa key, aplikasi tetap memakai skor aturan.
 
 | Aspek | Keterangan |
 |---|---|
-| Model | `claude-opus-5-5` (bisa diganti lewat `ANTHROPIC_MODEL`), `effort: low` karena tugasnya penilaian singkat |
-| Format keluaran | JSON lewat structured output (`outputConfig.format = json_schema`), jadi hasilnya selalu bisa di-parse |
-| Privasi | Ciri rahasia tidak dikirim; foto yang dikirim hanya thumbnail 320 px |
-| Ketahanan | Error API, timeout, dan penolakan (`stopReason = refusal`) ditangkap, lalu skor aturan tetap dipakai. Fallback model di sisi server belum dipasang karena penolakan untuk penilaian barang hilang sangat jarang |
-| Biaya | Sekitar US$0,05 per pencocokan (1 laporan hilang dan maksimal 5 kandidat bergambar) |
+| Penyedia | Dicoba berurutan sesuai `AI_PROVIDERS` (bawaan `gemini`). Penyedia tanpa API key dilewati |
+| Model | `gemini-3.5-flash-lite` (bisa diganti lewat `GEMINI_MODEL`). Dipilih karena masuk tier gratis, bisa membaca foto, dan menjawab dalam 2 sampai 4 detik saat diuji |
+| Pemanggilan | `Http::withHeaders(['x-goog-api-key' => ...])->post(...)` ke endpoint `generateContent`, foto dikirim sebagai `inlineData` base64 |
+| Format keluaran | JSON lewat `responseMimeType = application/json` dan `responseJsonSchema`, lalu tetap dicek ulang di PHP sebelum disimpan |
+| Cadangan | OpenCode Console lewat format OpenAI chat completions (`OPENCODE_API_KEY`, `OPENCODE_MODEL`). Model gratis OpenCode menolak request dari luar aplikasi OpenCode (`FreeUsageLimitError`), jadi cadangan ini hanya aktif bila memakai model berbayar atau OpenCode Go |
+| Privasi | Ciri rahasia dan nama pelapor tidak dikirim; foto yang dikirim hanya thumbnail 320 px tanpa EXIF. Data tier gratis Gemini dapat dipakai Google untuk meningkatkan produknya |
+| Ketahanan | Kuota habis (HTTP 429), timeout 45 detik, dan JSON rusak ditangkap; penyedia berikutnya dicoba, dan bila semua gagal skor aturan tetap dipakai |
+| Notifikasi | Ditahan sampai AI selesai menilai, supaya skor aturan yang keliru tidak memicu notifikasi palsu |
+| Pengujian | `Http::fake()` di `tests/Feature/AiMatcherTest.php`; `Http::preventStrayRequests()` di `tests/TestCase.php` memastikan tes tidak pernah memanggil API sungguhan |
+| Biaya | Rp0 dengan tier gratis |
 
 ## 6. Menjalankan Proyek
 

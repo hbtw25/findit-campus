@@ -14,7 +14,7 @@ class AlertController extends Controller
 
         // Kandidat cocok untuk laporan hilang milik saya yang masih aktif
         $candidates = ReportMatch::with('lostReport', 'foundReport.campusLocation')
-            ->where('status', 'suggested')
+            ->shown()
             ->whereHas('lostReport', fn ($q) => $q->where('user_id', Auth::id())->whereIn('status', ['open', 'in_claim']))
             ->whereHas('foundReport', fn ($q) => $q->visible())
             ->orderByDesc('score')

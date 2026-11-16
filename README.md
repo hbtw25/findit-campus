@@ -3,7 +3,7 @@
 Web pencarian barang hilang berbasis peta untuk Telkom University. Tugas Besar Pemrograman Web, Kelompok 4.
 
 - **Peta Global:** setiap laporan tampil sebagai foto barang di atas peta kampus (Leaflet + OpenStreetMap), mirip peta lokasi foto di Instagram.
-- **Auto-match:** laporan hilang dan laporan temuan dicocokkan otomatis (kategori, jarak, waktu, kemiripan teks). Bila API key diisi, Claude ikut menilai ulang dengan membaca foto.
+- **Auto-match:** laporan hilang dan laporan temuan dicocokkan otomatis (kategori, jarak, waktu, kemiripan teks). Bila API key Gemini diisi, AI ikut menilai ulang dengan membaca foto, dan notifikasi ditahan sampai penilaian AI selesai.
 - **Klaim aman:** pengklaim menjawab ciri rahasia, admin memverifikasi, lalu serah terima diatur lewat chat.
 
 Dokumen lengkap ada di folder `docs/`: PRD, tech stack dan gaya kode, roadmap, desain FigCraft (`docs/design`), dan laporan Tubes (`docs/laporan`).
@@ -47,24 +47,28 @@ Ubah `APP_DEBUG=true` menjadi `APP_DEBUG=false` di `.env`, supaya bila terjadi e
 
 ### Mengaktifkan penilaian AI (opsional)
 
-1. Isi `ANTHROPIC_API_KEY=` di `.env` (bisa juga mengganti `ANTHROPIC_MODEL`).
-2. Jalankan antrian di terminal kedua:
+1. Buat API key gratis di Google AI Studio (https://aistudio.google.com, menu Get API key).
+2. Isi `GEMINI_API_KEY=` di `.env`. Model bawaan `gemini-3.5-flash-lite` (tier gratis, bisa membaca foto); bisa diganti lewat `GEMINI_MODEL`.
+3. Jalankan antrian di terminal kedua, karena penilaian AI berjalan di belakang supaya pengguna tidak menunggu:
    ```bash
    php artisan queue:work
    ```
+4. Jalankan `php artisan migrate:fresh --seed` bila ingin data demo ikut dinilai AI (sekitar 20 detik).
 
-Tanpa API key, aplikasi tetap berjalan normal memakai skor aturan.
+Tanpa API key atau bila kuota gratis habis, aplikasi tetap berjalan normal memakai skor aturan. OpenCode Console sudah disiapkan sebagai cadangan (`AI_PROVIDERS=gemini,opencode`, `OPENCODE_API_KEY`, `OPENCODE_MODEL`), tetapi model gratis OpenCode hanya bisa dipakai dari aplikasi OpenCode, jadi cadangan ini butuh model berbayar atau OpenCode Go.
+
+Jangan pernah commit `.env`: file ini berisi API key dan sudah ada di `.gitignore`.
 
 ## Tes Otomatis
 
 ```bash
 php artisan test
 ```
-42 tes fitur memakai SQLite di memori, jadi tidak menyentuh database MySQL.
+48 tes fitur memakai SQLite di memori, jadi tidak menyentuh database MySQL. Tes AI memakai `Http::fake()`, dan semua request HTTP sungguhan diblokir selama tes, jadi tes tidak menghabiskan kuota API.
 
 ## Teknologi
 
-Laravel 13 (PHP 8.3) · MySQL 8 · Blade · Bootstrap 5.3 · jQuery 3.7 + AJAX/JSON · DataTables · Leaflet + MarkerCluster + OpenStreetMap · qrcode.js · html2canvas · Claude API (opsional).
+Laravel 13 (PHP 8.3) · MySQL 8 · Blade · Bootstrap 5.3 · jQuery 3.7 + AJAX/JSON · DataTables · Leaflet + MarkerCluster + OpenStreetMap · qrcode.js · html2canvas · Gemini API dari Google AI Studio (opsional, tier gratis).
 
 Semua library frontend ada di `public/vendor` (tidak butuh CDN); hanya tile peta yang butuh internet.
 

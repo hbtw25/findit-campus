@@ -92,7 +92,11 @@ class MatchService
             $keptIds[] = $match->id;
             $affectedLost->push($row['lost']->id);
 
-            $this->notifyIfStrong($match);
+            // Bila AI aktif, notifikasi menunggu penilaian AI agar skor aturan yang keliru
+            // (misalnya tumbler beda warna dan merek) tidak sempat memicu alert palsu
+            if (! AiMatcher::enabled() || $match->ai_score !== null) {
+                $this->notifyIfStrong($match);
+            }
         }
 
         // Hapus kandidat lama yang sudah tidak relevan (kecuali yang sudah ditolak/diklaim)

@@ -1,6 +1,6 @@
 # Roadmap Implementasi FindIt Campus
 
-Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1 sampai F12 terimplementasi, 42 tes otomatis lulus, dan data demo siap untuk presentasi.
+Kondisi per **16 November 2026**: versi 1 sudah **berjalan penuh** di `C:\laragon\www\findit-campus`. Semua fitur F1 sampai F12 terimplementasi, 48 tes otomatis lulus, dan data demo siap untuk presentasi.
 
 Roadmap ini dipakai kelompok untuk:
 1. memahami kode bagian masing-masing (sesuai PIC);
@@ -28,7 +28,7 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 | 0 (15 sampai 16 Nov) | Modul 10 AJAX | ✅ PRD, desain FigCraft, website v1, tes, laporan | Semua dokumen + aplikasi berjalan |
 | 1 (17 sampai 23 Nov) | Modul 11 Laravel Intro | Push ke GitHub (Modul 2), setiap anggota clone + jalankan lokal + membaca file PIC-nya; uji ulang koordinat 34 gedung di lapangan | Repo kelompok, semua laptop bisa menjalankan aplikasi |
 | 2 (24 sampai 30 Nov) | Modul 12 Laravel DB 1 | Pengayaan pilihan (§4); foto demo diganti foto asli barang (opsional) | 1 sampai 2 fitur pengayaan |
-| 3 (1 sampai 7 Des) | Modul 13 Laravel DB 2 | Uji pengguna dengan 3 teman (target < 3 menit per laporan); perbaiki temuan; aktifkan AI bila ada API key | Catatan uji pengguna |
+| 3 (1 sampai 7 Des) | Modul 13 Laravel DB 2 | Uji pengguna dengan 3 teman (target < 3 menit per laporan); perbaiki temuan; uji akurasi auto-match 10 pasangan dengan Gemini | Catatan uji pengguna |
 | 4 (8 sampai 14 Des) | Modul 14 Responsi Tubes 2 | Asistensi dengan asprak (target progres 80 sampai 100% sudah tercapai), latihan demo | Demo lancar + slide |
 | 5 (15 sampai 21 Des) | Modul 15 COTS | Persiapan coding on the spot: setiap anggota latihan membuat CRUD kecil dengan pola yang sama | - |
 
@@ -43,10 +43,10 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 | F5 | Klaim Kepemilikan | ✅ | Ciri rahasia, maksimal 3 klaim menunggu, tidak bisa klaim laporan sendiri |
 | F6 | Komunikasi & Pengembalian | ✅ | Chat AJAX (polling 5 detik), konfirmasi diserahkan |
 | F7 | Admin | ✅ | Dashboard, DataTables JSON, verifikasi klaim berdampingan, CRUD kategori |
-| F8 | Integrasi & Pengujian | ✅ | 42 tes fitur lulus, seeder demo |
+| F8 | Integrasi & Pengujian | ✅ | 48 tes fitur lulus, seeder demo |
 | F9 | Peta Foto ala Instagram | ✅ | Marker foto + cluster foto terbaru + jumlah |
 | F10 | Bagikan Link/QR/Poster | ✅ | `/r/{kode}`, QR, poster A5 (print), unduh story 1080×1920 |
-| F11 | AI Auto-Match | ✅ | Skor aturan selalu jalan; Claude menilai ulang bila API key diisi |
+| F11 | AI Auto-Match | ✅ | Skor aturan selalu jalan; Gemini (tier gratis Google AI Studio) menilai ulang teks dan foto bila API key diisi |
 | F12 | Notifikasi | ✅ | Lonceng AJAX + halaman notifikasi + kandidat cocok |
 
 ## 4. Ide Pengayaan (bila ada waktu)
@@ -59,7 +59,7 @@ Setiap anggota sebaiknya bisa menjelaskan file bagiannya saat presentasi (biasan
 
 ## 5. Skenario Uji End-to-End
 
-Semua skenario di bawah sudah diuji manual di browser dan/atau lewat tes otomatis pada 16 Nov 2026.
+Semua skenario di bawah sudah diuji manual di browser dan/atau lewat tes otomatis pada 16 Nov 2026. Skenario 26 dan 27 memakai API Gemini sungguhan.
 
 | No | Skenario | Hasil yang diharapkan | Status |
 |---|---|---|---|
@@ -88,6 +88,9 @@ Semua skenario di bawah sudah diuji manual di browser dan/atau lewat tes otomati
 | 23 | Dua admin menyetujui dua klaim berbeda untuk barang yang sama | Persetujuan kedua ditolak (409) | ✅ tes otomatis |
 | 24 | Penemu menekan "Bukan ini" pada kandidat | Tombol tidak ada; permintaan langsung ditolak (403) | ✅ tes otomatis |
 | 25 | Membuka /reports?q[]=x | Kembali dengan pesan validasi, bukan error 500 | ✅ tes otomatis |
+| 26 | Laporan temuan HP Samsung diunggah lewat form, worker antrian berjalan | Gemini memberi skor 100 untuk HP yang benar, 0 untuk laptop; Rani mendapat notifikasi; laptop disembunyikan | ✅ browser + Gemini asli |
+| 27 | Tumbler hitam Stanley dicocokkan dengan tumbler biru Corkcicle (skor aturan 68) | AI memberi skor 10, tidak ada notifikasi | ✅ Gemini asli + tes |
+| 28 | Kuota Gemini habis (HTTP 429) | OpenCode dicoba; bila juga gagal, notifikasi tetap terkirim dengan skor aturan | ✅ tes otomatis |
 
 ## 6. Hasil Pengukuran Indikator
 
@@ -97,8 +100,8 @@ Pengukuran dilakukan pada 16 November 2026 dengan Chrome headless di laptop peng
 |---|---|---|---|
 | Waktu muat Peta Global sampai marker pertama tampil | < 2 detik | Median 0,77 detik dari 5 percobaan (JSON peta 94 KB, 0,1 sampai 0,3 detik) | Tercapai |
 | Laporan baru tampil di Peta Global | < 3 detik | Tersimpan 0,43 detik, ada di JSON peta 0,64 detik, terlihat di peta 1,27 detik | Tercapai |
-| Skenario uji end-to-end | 100% lulus | 25 dari 25 skenario sesuai | Tercapai |
+| Skenario uji end-to-end | 100% lulus | 28 dari 28 skenario sesuai | Tercapai |
 | Waktu membuat satu laporan | < 3 menit | Belum diukur, perlu uji dengan 3 pengguna nyata (jadwal minggu 3) | Belum |
-| Akurasi auto-match pada 10 pasangan uji | ≥ 8 pasangan di 3 teratas | 4 pasangan demo yang mirip semuanya berada di peringkat pertama; uji formal 10 pasangan belum dilakukan | Sebagian |
+| Akurasi auto-match pada 10 pasangan uji | ≥ 8 pasangan di 3 teratas | Dengan Gemini, 5 pasangan yang benar mendapat skor 90 sampai 100 dan berada di peringkat pertama; 3 kandidat yang salah (earbuds, laptop, tumbler beda merek) mendapat 0 sampai 10. Uji formal 10 pasangan belum dilakukan | Sebagian |
 
 Tanpa OPcache (bawaan Laragon), Peta Global yang sama butuh median 2,2 detik karena PHP mengompilasi ulang semua file di setiap request. OPcache sudah diaktifkan di `C:\laragon\bin\php\php-8.3.30-Win32-vs16-x64\php.ini` (salinan asli: `php.ini.bak-sebelum-opcache`). Anggota kelompok lain sebaiknya mengaktifkannya juga sebelum demo.

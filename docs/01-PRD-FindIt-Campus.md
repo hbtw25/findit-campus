@@ -164,15 +164,18 @@ Syarat kandidat:
 Kandidat dengan skor ≥ 40 disimpan (maksimal 5 teratas) di tabel `report_matches`.
 
 ### 8.3 Tahap 2: Penilaian AI (opsional)
-Bila `ANTHROPIC_API_KEY` diisi di `.env`, sebuah *job* antrian mengirim laporan hilang dan maksimal 5 kandidat temuan ke Claude (model `claude-opus-5-5`, lewat SDK resmi `anthropic-ai/sdk`). Yang dikirim: judul, deskripsi, warna, merek, kategori, nama gedung, waktu, dan **foto** (thumbnail). AI bisa membandingkan deskripsi teks pemilik dengan foto temuan, sesuatu yang tidak bisa dilakukan skor aturan.
-- Keluaran per kandidat: `score` 0 sampai 100 + `reason` ≤ 140 karakter dalam bahasa Indonesia, misalnya *"Warna biru dongker dan gantungan kunci boneka sesuai deskripsi; ditemukan 120 m dari lokasi hilang."*
+Bila `GEMINI_API_KEY` diisi di `.env`, sebuah *job* antrian mengirim laporan hilang dan maksimal 5 kandidat temuan ke Gemini dari Google AI Studio (model `gemini-3.5-flash-lite`, tier gratis) lewat HTTP client Laravel. Yang dikirim: judul, deskripsi, warna, merek, kategori, nama gedung, waktu, jarak, dan **foto** (thumbnail 320 px). AI bisa membandingkan deskripsi teks pemilik dengan foto temuan, sesuatu yang tidak bisa dilakukan skor aturan.
+- Keluaran per kandidat: `score` 0 sampai 100 + `reason` ≤ 140 karakter dalam bahasa Indonesia. Contoh hasil nyata saat uji: *"Warna, merek, dan jenis tumbler sangat berbeda. Laporan mencari warna hitam merek Stanley, sedangkan kandidat berwarna biru merek Corkcicle."* (skor aturan 68, skor AI 10).
 - Skor akhir memakai skor AI bila ada, dan skor aturan bila tidak.
-- Ciri rahasia tidak pernah dikirim ke AI, supaya tidak bocor lewat teks alasan.
-- Perkiraan biaya: sekitar US$0,05 per pencocokan (beberapa foto kecil + teks). Demo dengan puluhan laporan menghabiskan < US$5.
-- Bila API gagal atau key kosong, sistem tetap berjalan dengan skor aturan. Antarmuka menampilkan sumber skornya ("Skor aturan" / "Dinilai AI").
+- Ciri rahasia dan nama pelapor tidak pernah dikirim ke AI, supaya tidak bocor lewat teks alasan.
+- Biaya: Rp0. Tier gratis Gemini cukup untuk demo (satu request per laporan hilang yang kandidatnya berubah). Konsekuensinya, Google boleh memakai data tier gratis untuk meningkatkan produknya, jadi yang dikirim hanya data barang, bukan data orang.
+- Penyedia dicoba berurutan sesuai `AI_PROVIDERS`. OpenCode Console (format OpenAI) sudah disiapkan sebagai cadangan, tetapi model gratis OpenCode hanya bisa dipakai dari aplikasi OpenCode sendiri, sehingga cadangan ini baru berguna bila kelompok memakai model berbayar atau OpenCode Go.
+- Bila semua penyedia gagal (kuota habis, jaringan putus) atau key kosong, sistem tetap berjalan dengan skor aturan. Antarmuka menampilkan sumber skornya ("Skor aturan" / "Dinilai AI").
 
 ### 8.4 Notifikasi
 Kandidat dengan skor akhir ≥ 60 memicu notifikasi ke **pemilik laporan hilang** ("Ada barang temuan yang diduga milikmu"). Penemu bisa melihat kandidat di halaman laporannya. Kandidat yang ditandai "Bukan barang saya" tidak muncul lagi.
+
+Bila AI aktif, notifikasi ditahan sampai AI selesai menilai. Tanpa aturan ini, skor aturan yang keliru (misalnya 68 untuk tumbler beda warna dan merek) sudah memicu notifikasi palsu sebelum AI sempat menurunkannya. Kandidat yang dinilai AI di bawah 40 disembunyikan dari pengguna.
 
 ## 9. Aturan Bisnis
 
@@ -199,6 +202,8 @@ Kandidat dengan skor akhir ≥ 60 memicu notifikasi ke **pemilik laporan hilang*
 | B19 | Admin tidak boleh memutuskan klaim yang melibatkan akunnya sendiri (sebagai pengklaim atau penemu); keputusan diserahkan ke admin lain. |
 | B20 | Jenis laporan (hilang atau temuan) tidak bisa diganti setelah laporan dibuat. Bila salah pilih, pelapor menutup laporan lalu membuat laporan baru. |
 | B21 | Hanya pemilik laporan hilang yang bisa menandai kandidat sebagai "Bukan barang saya". Klaim yang dibatalkan mengembalikan kandidatnya ke daftar; klaim yang ditolak menyembunyikannya. |
+| B22 | Bila AI aktif, notifikasi kandidat dikirim setelah AI menilai. Bila semua penyedia AI gagal, notifikasi tetap dikirim memakai skor aturan. |
+| B23 | Kandidat dengan skor akhir di bawah 40 (misalnya karena AI menilainya tidak cocok) tidak ditampilkan di halaman laporan, notifikasi, maupun hitungan kandidat. |
 
 ## 10. Model Data
 
